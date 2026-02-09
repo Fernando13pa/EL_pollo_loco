@@ -2,6 +2,13 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100vh;
+    min-height: 100%;
+    margin: 0;
+    background-image: url('img/5_Fondo/paisaje.jpg');   
+    background-size:cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 canvas{
