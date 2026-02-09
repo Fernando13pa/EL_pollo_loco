@@ -1,22 +1,22 @@
-class StatusBar extends DrawableObject {
+class CoinBar extends DrawableObject {
     IMAGES = [
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/0.png',
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/20.png',
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/40.png',
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/60.png',
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/80.png',
-        'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/100.png'
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/0.png',
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/20.png',
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/40.png',
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/60.png',
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/80.png',
+        'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/100.png'
     ];
     percent = 100;
 
     constructor() {
-        super().loadImage(this.IMAGES[5]);
+        super().loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);
         this.x = 10;
-        this.y = 55;
+        this.y = 100;
         this.width = 200;
         this.height = 60;
-        this.setPercent(100);
+        this.setPercent(0);
     }
 
     setPercent(percent) {
@@ -24,6 +24,7 @@ class StatusBar extends DrawableObject {
         let path = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }
+
     resolveImageIndex() {
         if (this.percent == 100) {
             return 5;
