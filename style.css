@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Sancreek';
+    src: url('Fonts/Sancreek-Regular.ttf') format('truetype');
+}
+
 body{
     display: flex;
     flex-direction: column;
@@ -11,6 +16,17 @@ body{
     background-repeat: no-repeat;
 }
 
+h1{
+    color:black;
+    font-size: 4em;
+    margin-top: 100px;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    font-family: 'Sancreek', sans-serif;
+    letter-spacing: 0.1em;
+}
+
 canvas{
     background-color: black;
+    border-radius: 20px;
 }
