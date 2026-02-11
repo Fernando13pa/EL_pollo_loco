@@ -45,9 +45,38 @@ class World {
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
-                this.character.hit();
-                this.statusBar.setPercent(this.character.energy);
+                // Wenn es ein Chicken ist, wird es sofort gequetscht
+                if (enemy instanceof Chicken) {
+                    enemy.squash();
+                    this.character.jump();
+                    // Entferne das Chicken nach kurzer Zeit
+                    setTimeout(() => {
+                        this.level.enemies = this.level.enemies.filter(e => e !== enemy);
+                    }, 500);
+                } else {
+                    this.character.hit();
+                    this.statusBar.setPercent(this.character.energy);
+                }
             }
+        });
+
+        // Prüfe Kollisionen zwischen Flaschen und Feinden
+        this.throwableObjects.forEach((bottle) => {
+            this.level.enemies.forEach((enemy) => {
+                // Nur wenn die Flasche noch nicht auf dem Boden ist (nicht im Splash-Status)
+                if (bottle.isColliding(enemy) && !bottle.hasHitGround) {
+                    // Wenn es ein Chicken ist, wird es gequetscht
+                    if (enemy instanceof Chicken) {
+                        enemy.squash();
+                        // Entferne das Chicken nach kurzer Zeit
+                        setTimeout(() => {
+                            this.level.enemies = this.level.enemies.filter(e => e !== enemy);
+                        }, 500);
+                    }
+                    // Entferne die Flasche
+                    this.throwableObjects = this.throwableObjects.filter(b => b !== bottle);
+                }
+            });
         });
 
         if (this.level.coins) {

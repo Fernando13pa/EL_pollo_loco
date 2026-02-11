@@ -3,6 +3,17 @@ class Character extends MovableObject {
     y = 80;
     speed = 10;
 
+    IMAGES_STILL = ['img/2_Pepe_figura/1_parado/tranquilo/I-1.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-2.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-3.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-4.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-5.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-6.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-7.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-8.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-9.png',
+        'img/2_Pepe_figura/1_parado/tranquilo/I-10.png'
+    ];
 
     IMAGES_WALKING = ['img/2_Pepe_figura/2_camina/W-21.png',
         'img/2_Pepe_figura/2_camina/W-22.png',
@@ -42,7 +53,8 @@ class Character extends MovableObject {
 
 
     constructor() {
-        super().loadImage('img/2_Pepe_figura/2_camina/W-21.png');
+        super().loadImage('img/2_Pepe_figura/1_parado/tranquilo/I-1.png');
+        this.loadImages(this.IMAGES_STILL);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
@@ -52,6 +64,7 @@ class Character extends MovableObject {
     }
     animate() {
         setInterval(() => {
+        
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;
@@ -78,6 +91,8 @@ class Character extends MovableObject {
             } else {
                 if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                     this.playAnimation(this.IMAGES_WALKING);
+                } else {
+                    this.playAnimation(this.IMAGES_STILL);
                 }
             }
 
