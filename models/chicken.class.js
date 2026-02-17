@@ -1,5 +1,5 @@
 class Chicken extends MovableObject {
-    y = 355;
+    y = 360;
     height = 70;
     width = 70;
     IMAGES_WALKING = ['img/3_Enemigos/Gallinas/1_caminar/1_w.png',
@@ -15,7 +15,7 @@ class Chicken extends MovableObject {
         super().loadImage('img/3_Enemigos/Gallinas/1_caminar/1_w.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = 200 + Math.random() * 500; // Zufällige Startposition zwischen 200 und 700//
+        this.x = 200 + Math.random() * 1900; // Zufällige Startposition zwischen 200 und 700//
         this.speed = 0.15 + Math.random() * 0.5; // Zufällige Geschwindigkeit zwischen 0.15 und 0.4 //
         this.animate();
     }
@@ -38,5 +38,6 @@ class Chicken extends MovableObject {
     squash() {
         this.isSquashed = true;
     }
+
 
 }

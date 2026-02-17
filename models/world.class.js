@@ -42,21 +42,23 @@ class World {
         }
     }
 
+
+
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
-                // Wenn es ein Chicken ist, wird es sofort gequetscht
-                if (enemy instanceof Chicken) {
-                    enemy.squash();
-                    this.character.jump();
-                    // Entferne das Chicken nach kurzer Zeit
+                if (enemy instanceof Chicken && this.character.isCollidingWithChicken(enemy) && this.character.isAboveGround() ) {
+                    this.character.jump();    // Spieler springt nach dem Quetschen hoch 
+                    enemy.squash();          // Chicken wird getroffen
                     setTimeout(() => {
                         this.level.enemies = this.level.enemies.filter(e => e !== enemy);
                     }, 500);
                 } else {
                     this.character.hit();
+                    this.character.playAnimation(this.character.IMAGES_HURT);
                     this.statusBar.setPercent(this.character.energy);
                 }
+
             }
         });
 
@@ -108,6 +110,21 @@ class World {
             });
         }
     }
+
+    // chickenCollision() {
+    //     this.level.enemies.forEach((enemy) => {
+    //     if (enemy instanceof Chicken && enemy.isSquashed) {
+    //         return;
+    //     }
+    //     if (enemy instanceof Chicken) {
+    //         if (this.character.isColliding(enemy)) {
+    //             console.log('Kollision mit Chicken erkannt!');
+    //             enemy.squash(); // Chicken wird gequetscht
+    //             this.character.jump(); // Spieler springt nach dem Quetschen hoch
+    //             }
+    //         }
+    //     });
+    // }
 
     setCoinBarPercent(percent) {
         this.coinBar.setPercent(percent);

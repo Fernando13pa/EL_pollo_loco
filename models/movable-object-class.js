@@ -30,6 +30,17 @@ class MovableObject extends DrawableObject {
             this.y < movableObject.y + movableObject.height;
     }
 
+    isCollidingWithChicken(enemy) {
+    return this.speedY < 0 && // fällt
+        this.y + this.height > enemy.y  &&
+        this.x + this.width > enemy.x &&
+        this.x < enemy.x + enemy.width &&
+        this.y < enemy.y + enemy.height / 6;
+}
+
+
+
+
     hit() {
         this.energy -= 5;
         if (this.energy < 0) {
@@ -63,14 +74,9 @@ class MovableObject extends DrawableObject {
 
     moveLeft() {
         this.x -= this.speed;
-
-
-        // setInterval(() => {
-        //     this.x -= this.speed; // Langsame Bewegung nach links
         if (this.x < -this.width) {
             this.x = 800; // Zurücksetzen der Wolke auf die rechte Seite
         }
-        // }, 1000 / 60);
     }
 
     jump() {
