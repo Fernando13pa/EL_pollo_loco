@@ -17,6 +17,7 @@ class World {
     isGameOver = false;
     gameWonShown = false;
     gameLoopInterval = null;
+    isPaused = false;  // Pausierter Zustand für Settings Menü
 
     constructor(canvas, keyboard, level) {
         this.ctx = canvas.getContext('2d');
@@ -62,6 +63,7 @@ class World {
                 this.checkEndbossAppearance();
             }
         }, 200);
+        addInterval(this.gameLoopInterval);
     }
 
     checkThrowableObjects() {
@@ -209,6 +211,16 @@ class World {
     }
 
     draw() {
+        // Wenn das Spiel pausiert ist, update Animationen nicht
+        if (this.isPaused) {
+            // Aber zeichne weiter, damit das Spiel nicht einfriert
+            let self = this;
+            requestAnimationFrame(function () {
+                self.draw();
+            });
+            return;
+        }
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0); // Kamera verschieben

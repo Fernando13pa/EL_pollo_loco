@@ -13,8 +13,12 @@ class Cloud extends MovableObject {
 
     animate() {
         this.cloudMoveInterval = setInterval(() => {
-        this.moveLeft();
+            // Pausieren wenn Settings Menü offen ist
+            if (isPaused) return;
+            
+            this.moveLeft();
         }, 1000 / 60);
+        addInterval(this.cloudMoveInterval);
     }
 
 } 

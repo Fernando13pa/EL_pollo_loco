@@ -21,17 +21,25 @@ class SmallChicken extends MovableObject {
 
     animate() {
         this.moveInterval = setInterval(() => {
+            // Pausieren wenn Settings Menü offen ist
+            if (isPaused) return;
+            
             if (!this.isSquashed) {
                 this.moveLeft();
             }
         }, 1000 / 60);
+        addInterval(this.moveInterval);
         this.animateInterval = setInterval(() => {
+            // Pausieren wenn Settings Menü offen ist
+            if (isPaused) return;
+            
             if (this.isSquashed) {
                 this.img = this.imageCache['img/3_Enemigos/Pollitos/2_aplastados/dead.png'];
             } else {
                 this.playAnimation(this.IMAGES_WALKING);
             }
         }, 500);
+        addInterval(this.animateInterval);
     }
 
     squash() {

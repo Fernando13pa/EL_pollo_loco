@@ -36,6 +36,7 @@ class ThrowableObject extends MovableObject {
         this.throwMoveInterval = setInterval(() => {
             this.x += 10;
         }, 1000 / 25);
+        addInterval(this.throwMoveInterval);
 
         this.throwAnimationInterval = setInterval(() => {
             if (this.hasHitGround && !this.shouldBeRemoved) {
@@ -48,6 +49,7 @@ class ThrowableObject extends MovableObject {
                 this.playAnimation(this.IMAGES_ROTATION);
             }
         }, 1000 / 25);
+        addInterval(this.throwAnimationInterval);
 
         this.throwGroundCheckInterval = setInterval(() => {
             if (this.y >= 350 && !this.hasHitGround) {
@@ -60,6 +62,7 @@ class ThrowableObject extends MovableObject {
                 }
             }
         }, 1000 / 25);
+        addInterval(this.throwGroundCheckInterval);
 
     }
 }

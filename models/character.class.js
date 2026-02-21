@@ -67,6 +67,8 @@ class Character extends MovableObject {
     }
     animate() {
         this.animateInterval = setInterval(() => {
+            // Pausieren wenn Settings Menü offen ist
+            if (isPaused) return;
         
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
@@ -84,9 +86,13 @@ class Character extends MovableObject {
             }
             this.world.camera_x = -this.x + 120;
         }, 1000 / 60);
+        addInterval(this.animateInterval);
 
 
         this.animateInterval2 = setInterval(() => {
+            // Pausieren wenn Settings Menü offen ist
+            if (isPaused) return;
+
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
                 this.runningSound.pause();
@@ -109,5 +115,6 @@ class Character extends MovableObject {
             }
 
         }, 50);
+        addInterval(this.animateInterval2);
     }
 }

@@ -14,6 +14,7 @@ class MovableObject extends DrawableObject {
                 this.speedY -= this.acceleration;
             }
         }, 1000 / 25);
+        addInterval(this.gravityInterval);
     }
 
     isAboveGround() {

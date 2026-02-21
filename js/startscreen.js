@@ -1,7 +1,23 @@
 // Start Screen Funktionalität
 let isMuted = false;
+let isPaused = false;  // Globales Pause-Flag für Settings Menü
+let intervalIds = [];
+let menuOpen = false;  // Tracke ob Settings Menu offen ist
+let pausedIntervals = [];  // Speichere pausierte Game Loop
+
+function addInterval(intervalId) {
+    if (intervalId) {
+        intervalIds.push(intervalId);
+    }
+}
+
+function resetIntervals() {
+    intervalIds.forEach(clearInterval);
+    intervalIds = [];
+}
 
 function startGame() {
+    console.log('🎮 startGame() aufgerufen');
     const startScreen = document.getElementById('startScreen');
     const canvas = document.getElementById('canvas');
     const muteButton = document.getElementById('muteButton');
@@ -18,7 +34,10 @@ function startGame() {
     settingsButton.classList.remove('hidden');
     
     // Spiel initialisieren
+    console.log('   Rufe init() auf...');
     init();
+    console.log('   World wurde erstellt und Game Loop gestartet');
+    console.log('   world.gameLoopInterval:', world.gameLoopInterval);
 }
 
 function openOptions() {
@@ -30,18 +49,26 @@ function openOptions() {
 }
 
 function closeOptions() {
+    console.log('👈 closeOptions() aufgerufen');
     const canvas = document.getElementById('canvas');
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
     
     // Wenn wir während des Spielens sind, Canvas blur entfernen und Menü verstecken
     if (typeof world !== 'undefined' && world) {
+        console.log('   World existiert - wir waren während des Spielens');
         canvas.style.filter = 'none';
         optionsMenu.classList.add('hidden');
+        menuOpen = false;  // Menü ist jetzt zu
+        console.log('   Settings Menü wurde geschlossen');
+        // Starte das Spiel wieder wenn es pausiert war
+        resumeGame();
     } else {
+        console.log('   World existiert nicht - wir waren im StartScreen');
         // Wenn wir vom StartScreen aus waren, StartScreen anzeigen
         optionsMenu.classList.add('hidden');
         startScreen.classList.remove('hidden');
+        menuOpen = false;
     }
 }
 
@@ -51,6 +78,7 @@ function showControls() {
     
     optionsMenu.classList.add('hidden');
     controlsMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function closeControls() {
@@ -59,6 +87,7 @@ function closeControls() {
     
     controlsMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function showGameExplanation() {
@@ -67,6 +96,7 @@ function showGameExplanation() {
     
     optionsMenu.classList.add('hidden');
     gameExplanationMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function closeGameExplanation() {
@@ -75,6 +105,7 @@ function closeGameExplanation() {
     
     gameExplanationMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function showImpressum() {
@@ -83,6 +114,7 @@ function showImpressum() {
     
     optionsMenu.classList.add('hidden');
     impressumMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function closeImpressum() {
@@ -91,14 +123,60 @@ function closeImpressum() {
     
     impressumMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
+    // Spiel bleibt pausiert
 }
 
 function openSettings() {
+    console.log('👉 openSettings() aufgerufen');
     const canvas = document.getElementById('canvas');
     const optionsMenu = document.getElementById('optionsMenu');
     
     canvas.style.filter = 'blur(3px)';
     optionsMenu.classList.remove('hidden');
+    menuOpen = true;  // Menü ist jetzt offen
+    console.log('   Settings Menü wurde geöffnet');
+    // Pausiere das Spiel
+    pauseGame();
+}
+
+function pauseGame() {
+    console.log('🔴 pauseGame() aufgerufen');
+    // Pausiere nur wenn wir spielen
+    if (typeof world !== 'undefined' && world) {
+        console.log('   World existiert:', !!world);
+        console.log('   gameLoopInterval existiert:', !!world.gameLoopInterval);
+        // Speichere die Game Loop Interval ID bevor wir sie pausieren
+        if (world.gameLoopInterval) {
+            console.log('   Stoppe gameLoopInterval');
+            clearInterval(world.gameLoopInterval);
+            world.gameLoopInterval = null;  // Setze auf null damit resumeGame() weiß, dass es pausiert ist
+        }
+        // Setze globales isPaused Flag damit alle setIntervals stoppen
+        isPaused = true;
+        console.log('   Global isPaused Flag gesetzt zu: true');
+    }
+}
+
+function resumeGame() {
+    console.log('🟢 resumeGame() aufgerufen');
+    // Starte das Spiel wieder wenn wir spielen und nichts Schlimmes passiert ist
+    if (typeof world !== 'undefined' && world && !world.isGameOver) {
+        console.log('   World existiert:', !!world);
+        console.log('   isGameOver:', world.isGameOver);
+        console.log('   gameLoopInterval existiert:', !!world.gameLoopInterval);
+        // Setze globales isPaused Flag auf false damit alle setIntervals weiterlaufen
+        isPaused = false;
+        console.log('   Global isPaused Flag gesetzt zu: false');
+        // Falls die Game Loop pausiert ist, starten wir sie erneut
+        if (!world.gameLoopInterval) {
+            console.log('   Starte Game Loop neu');
+            world.run();  // Starte die Game Loop neu
+        } else {
+            console.log('   Game Loop läuft bereits!');
+        }
+    } else {
+        console.log('   FEHLER: Kann nicht fortsetzen - world oder isGameOver Problem');
+    }
 }
 
 function toggleMute() {
@@ -157,54 +235,20 @@ function showGameOver() {
     
     // Audio stoppen
     if (typeof world !== 'undefined' && world) {
-        // Stoppe den Main Game Loop
-        if (world.gameLoopInterval) clearInterval(world.gameLoopInterval);
+        // Stoppe alle Intervals
+        resetIntervals();
         
-        // Stoppe Character Animation (beide Intervals)
-        if (world.character) {
-            if (world.character.animateInterval) clearInterval(world.character.animateInterval);
-            if (world.character.animateInterval2) clearInterval(world.character.animateInterval2);
-            if (world.character.gravityInterval) clearInterval(world.character.gravityInterval);
-        }
-        
-        // Stoppe alle Enemy-Animationen
+        // Reset Endboss damit er nicht tot aussieht
         if (world.level && world.level.enemies) {
             world.level.enemies.forEach(enemy => {
                 if (enemy instanceof Endboss) {
-                    if (enemy.animateInterval1) clearInterval(enemy.animateInterval1);
-                    if (enemy.animateInterval2) clearInterval(enemy.animateInterval2);
-                    if (enemy.animateInterval3) clearInterval(enemy.animateInterval3);
-                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
-                    // Reset Endboss animationen state damit er nicht dead aussieht
                     enemy.isDead = false;
                     enemy.deadFrameIndex = 0;
-                } else {
-                    // Für Chicken und SmallChicken
-                    if (enemy.moveInterval) clearInterval(enemy.moveInterval);
-                    if (enemy.animateInterval) clearInterval(enemy.animateInterval);
-                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
                 }
             });
         }
         
-        // Stoppe alle Clouds
-        if (world.level && world.level.clouds) {
-            world.level.clouds.forEach(cloud => {
-                if (cloud.cloudMoveInterval) clearInterval(cloud.cloudMoveInterval);
-                if (cloud.gravityInterval) clearInterval(cloud.gravityInterval);
-            });
-        }
-        
-        // Stoppe alle Throwable Objects (Flaschen)
-        if (world.throwableObjects && world.throwableObjects.length > 0) {
-            world.throwableObjects.forEach(bottle => {
-                if (bottle.gravityInterval) clearInterval(bottle.gravityInterval);
-                if (bottle.throwMoveInterval) clearInterval(bottle.throwMoveInterval);
-                if (bottle.throwAnimationInterval) clearInterval(bottle.throwAnimationInterval);
-                if (bottle.throwGroundCheckInterval) clearInterval(bottle.throwGroundCheckInterval);
-            });
-        }
-        
+        // Stoppe Audio
         world.backgroundSound.pause();
         world.endbossSound.pause();
     }
@@ -224,30 +268,10 @@ function showGameWon() {
     
     // Audio stoppen und alle Animationen stoppen
     if (typeof world !== 'undefined' && world) {
-        // Stoppe den Main Game Loop
-        if (world.gameLoopInterval) clearInterval(world.gameLoopInterval);
+        // Stoppe alle Intervals
+        resetIntervals();
         
-        // Stoppe Character Animation (beide Intervals)
-        if (world.character) {
-            if (world.character.animateInterval) clearInterval(world.character.animateInterval);
-            if (world.character.animateInterval2) clearInterval(world.character.animateInterval2);
-        }
-        
-        // Stoppe alle Enemy-Animationen
-        if (world.level && world.level.enemies) {
-            world.level.enemies.forEach(enemy => {
-                if (enemy instanceof Endboss) {
-                    if (enemy.animateInterval1) clearInterval(enemy.animateInterval1);
-                    if (enemy.animateInterval2) clearInterval(enemy.animateInterval2);
-                    if (enemy.animateInterval3) clearInterval(enemy.animateInterval3);
-                } else {
-                    // Für Chicken und SmallChicken
-                    if (enemy.moveInterval) clearInterval(enemy.moveInterval);
-                    if (enemy.animateInterval) clearInterval(enemy.animateInterval);
-                }
-            });
-        }
-        
+        // Stoppe Audio
         world.backgroundSound.pause();
         world.endbossSound.pause();
     }
@@ -260,86 +284,16 @@ function restartGame() {
     gameOverScreen.classList.add('hidden');
     gameWonScreen.classList.add('hidden');
     
-    // Canvas resetten mit Startscreen Hintergrundbild
-    const canvas = document.getElementById('canvas');
-    canvas.style.backgroundImage = 'url(img/9_juego_modelos/iniciar/startscreen_1.png)';
-    
-    // Alte World aufräumen
+    // Alle Intervals clearen und World zerstören
+    resetIntervals();
     if (typeof world !== 'undefined' && world) {
-        // Stoppe den Main Game Loop
-        if (world.gameLoopInterval) clearInterval(world.gameLoopInterval);
-        
-        // Stoppe Character Animation (BEIDE Intervals!)
-        if (world.character) {
-            if (world.character.animateInterval) clearInterval(world.character.animateInterval);
-            if (world.character.animateInterval2) clearInterval(world.character.animateInterval2);
-        }
-        
-        // Stoppe alle Enemy-Animationen
-        if (world.level && world.level.enemies) {
-            world.level.enemies.forEach(enemy => {
-                // Stoppe alle Intervals für Endboss
-                if (enemy instanceof Endboss) {
-                    if (enemy.animateInterval1) clearInterval(enemy.animateInterval1);
-                    if (enemy.animateInterval2) clearInterval(enemy.animateInterval2);
-                    if (enemy.animateInterval3) clearInterval(enemy.animateInterval3);
-                    // Reset Dead-Animation
-                    enemy.isDead = false;
-                    enemy.deadFrameIndex = 0;
-                } else {
-                    // Für Chicken und SmallChicken - BEIDE Intervals!
-                    if (enemy.moveInterval) clearInterval(enemy.moveInterval);
-                    if (enemy.animateInterval) clearInterval(enemy.animateInterval);
-                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
-                }
-            });
-        }
-        
-        // Stoppe alle Clouds
-        if (world.level && world.level.clouds) {
-            world.level.clouds.forEach(cloud => {
-                if (cloud.cloudMoveInterval) clearInterval(cloud.cloudMoveInterval);
-                if (cloud.gravityInterval) clearInterval(cloud.gravityInterval);
-            });
-        }
-        
-        // Stoppe alle Throwable Objects (Flaschen)
-        if (world.throwableObjects && world.throwableObjects.length > 0) {
-            world.throwableObjects.forEach(bottle => {
-                if (bottle.gravityInterval) clearInterval(bottle.gravityInterval);
-                if (bottle.throwMoveInterval) clearInterval(bottle.throwMoveInterval);
-                if (bottle.throwAnimationInterval) clearInterval(bottle.throwAnimationInterval);
-                if (bottle.throwGroundCheckInterval) clearInterval(bottle.throwGroundCheckInterval);
-            });
-        }
-        
-        // Audio stoppen
-        if (world.backgroundSound) {
-            world.backgroundSound.pause();
-            world.backgroundSound.currentTime = 0;
-        }
-        if (world.endbossSound) {
-            world.endbossSound.pause();
-            world.endbossSound.currentTime = 0;
-        }
-        
-        // World zerstören
         world = null;
     }
     
     // Reset isMuted state
     isMuted = false;
-    const muteButton = document.getElementById('muteButton');
-    const settingsButton = document.getElementById('settingsButton');
-    muteButton.classList.add('hidden');
-    settingsButton.classList.add('hidden');
-    muteButton.style.opacity = '1';
     
-    // Neues Spiel starten
-    init();
-    
-    // Mute und Settings Button anzeigen
-    muteButton.classList.remove('hidden');
-    settingsButton.classList.remove('hidden');
+    // Starte das Spiel neu
+    startGame();
 }
 

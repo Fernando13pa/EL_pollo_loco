@@ -90,6 +90,7 @@ class Endboss extends MovableObject {
                 }
             }
         }, 200);
+        addInterval(this.animateInterval1);
 
         // Zyklus: 1 Sekunde stehen (ALERT), dann 2 Sekunden laufen (WALKING)
         this.animateInterval2 = setInterval(() => {
@@ -101,6 +102,7 @@ class Endboss extends MovableObject {
                 }, 2000);
             }
         }, 3000);
+        addInterval(this.animateInterval2);
 
         // Angriff-Zyklus: Alle 4 Sekunden angreifen für 2 Sekunden
         this.animateInterval3 = setInterval(() => {
@@ -112,6 +114,7 @@ class Endboss extends MovableObject {
                 }, 2000);
             }
         }, 4000);
+        addInterval(this.animateInterval3);
     }
 
     getHurt() {
