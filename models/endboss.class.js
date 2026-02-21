@@ -8,6 +8,7 @@ class Endboss extends MovableObject {
     isAttacking = false;
     isHurt = false;
     isDead = false;
+    deadFrameIndex = 0;
     elapsedTime = 0;
     energy = 100;
 
@@ -60,15 +61,20 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.x = 3800;
-        this.animate();
     }
 
     animate() {
         // Animation Loop
-        setInterval(() => {
-            // Wenn Endboss tot: Zeige Death-Animation
+        this.animateInterval1 = setInterval(() => {
+            // Wenn Endboss tot: Zeige Death-Animation (einmal)
             if (this.isDead) {
-                this.playAnimation(this.IMAGES_DEAD);
+                if (this.deadFrameIndex < this.IMAGES_DEAD.length) {
+                    // Zeige das aktuelle Dead-Frame
+                    this.img = this.imageCache[this.IMAGES_DEAD[this.deadFrameIndex]];
+                    this.deadFrameIndex++;
+                } 
+                // Wenn Animation fertig: Zeige das letzte Frame
+                // (deadFrameIndex >= IMAGES_DEAD.length, img bleibt beim letzten Frame)
             }
             // Wenn Character in der Nähe: Verhalten basierend auf Status
             else if (this.isCharacterNear) {
@@ -86,7 +92,7 @@ class Endboss extends MovableObject {
         }, 200);
 
         // Zyklus: 1 Sekunde stehen (ALERT), dann 2 Sekunden laufen (WALKING)
-        setInterval(() => {
+        this.animateInterval2 = setInterval(() => {
             if (this.isCharacterNear && !this.isHurt && !this.isDead) {
                 this.isRunning = true;
                 // Nach 2 Sekunden wieder stehen
@@ -97,7 +103,7 @@ class Endboss extends MovableObject {
         }, 3000);
 
         // Angriff-Zyklus: Alle 4 Sekunden angreifen für 2 Sekunden
-        setInterval(() => {
+        this.animateInterval3 = setInterval(() => {
             if (this.isCharacterNear && !this.isHurt && !this.isDead) {
                 this.isAttacking = true;
                 // Nach 2 Sekunden Attack stoppen
@@ -110,7 +116,7 @@ class Endboss extends MovableObject {
 
     getHurt() {
         this.isHurt = true;
-        this.energy -= 25;
+        this.energy -= 20;
         // Prüfe ob Endboss tot ist
         if (this.energy <= 0) {
             this.die();

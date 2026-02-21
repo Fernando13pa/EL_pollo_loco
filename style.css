@@ -29,4 +29,362 @@ h1{
 canvas{
     background-color: black;
     border-radius: 20px;
+    background-image: url('img/9_juego_modelos/iniciar/startscreen_1.png');
+    background-size: cover;
+    background-position: -74px center;
 }
+
+/* Start Screen Styles */
+#startScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 720px;
+    height: 480px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    border-radius: 20px;
+}
+
+#startScreen.hidden {
+    display: none;
+}
+
+.button-container {
+    display: flex;
+    gap: 30px;
+    flex-direction: row;
+    position: absolute;
+    bottom: 5px;
+}
+
+.start-button, .option-button {
+    padding: 12px 30px;
+    font-size: 1.2em;
+    font-family: 'Sancreek', sans-serif;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.start-button {
+    background-color: #B47807;
+    color: black;
+}
+
+.start-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(180, 120, 7, 0.6);
+}
+
+.option-button {
+    background-color: #B47807;
+    color: black;
+}
+
+.option-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(180, 120, 7, 0.6);
+}
+
+/* Mute Button */
+.mute-button {
+    position: absolute;
+    top: 10px;
+    left: calc(50% - 25px);
+    width: 50px;
+    height: 50px;
+    border: none;
+    background-color: rgba(180, 120, 7, 0.9);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.mute-button img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.mute-button:hover {
+    background-color: #B47807;
+    transform: scale(1.1);
+}
+
+.mute-button.hidden {
+    display: none;
+}
+
+/* Game Over Screen */
+.game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('img/Pierde_o\ _gana/You\ lost.png');
+    background-size: 720px 380px;
+    background-position: top center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 200;
+    border-radius: 20px;
+}
+
+.game-over-screen.hidden {
+    display: none;
+}
+
+/* Restart Button */
+.restart-button {
+    padding: 12px 40px;
+    font-size: 1.2em;
+    font-family: 'Sancreek', sans-serif;
+    background-color: #B47807;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+}
+
+.restart-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(180, 120, 7, 0.6);
+}
+
+/* Game Won Screen */
+.game-won-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('img/Pierde_o _gana/You won A.png');
+    background-size: 720px 380px;
+    background-position: top center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 200;
+    border-radius: 20px;
+}
+
+.game-won-screen.hidden {
+    display: none;
+}
+
+/* Options Menu */
+.options-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    border-radius: 20px;
+}
+
+.options-menu.hidden {
+    display: none;
+}
+
+.options-content {
+    text-align: center;
+    background-color: rgba(180, 120, 7, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.options-content h2 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-family: 'Sancreek', sans-serif;
+    font-size: 2em;
+}
+
+.option-menu-button {
+    display: block;
+    width: 200px;
+    padding: 12px 20px;
+    margin: 10px auto;
+    font-size: 1.1em;
+    font-family: 'Sancreek', sans-serif;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.option-menu-button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+/* Controls Menu */
+.controls-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    border-radius: 20px;
+}
+
+.controls-menu.hidden {
+    display: none;
+}
+
+.controls-content {
+    text-align: center;
+    background-color: rgba(180, 120, 7, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    max-width: 500px;
+}
+
+.controls-content h2 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-family: 'Sancreek', sans-serif;
+    font-size: 2em;
+}
+
+.controls-content p {
+    color: black;
+    font-size: 1em;
+    margin: 15px 0;
+    text-align: left;
+    font-family: Arial, sans-serif;
+}
+
+/* Game Explanation Menu */
+.game-explanation-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    border-radius: 20px;
+    overflow-y: auto;
+}
+
+.game-explanation-menu.hidden {
+    display: none;
+}
+
+.game-explanation-content {
+    text-align: center;
+    background-color: rgba(180, 120, 7, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    max-width: 550px;
+}
+
+.game-explanation-content h2 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-family: 'Sancreek', sans-serif;
+    font-size: 2em;
+}
+
+.game-explanation-content p {
+    color: black;
+    font-size: 1em;
+    margin: 15px 0;
+    text-align: left;
+    font-family: Arial, sans-serif;
+}
+
+.game-explanation-content strong {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Impressum Menu */
+.impressum-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 150;
+    border-radius: 20px;
+    overflow-y: auto;
+}
+
+.impressum-menu.hidden {
+    display: none;
+}
+
+.impressum-content {
+    text-align: center;
+    background-color: rgba(180, 120, 7, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    max-width: 550px;
+}
+
+.impressum-content h2 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-family: 'Sancreek', sans-serif;
+    font-size: 2em;
+}
+
+.impressum-content p {
+    color: black;
+    font-size: 0.95em;
+    margin: 12px 0;
+    text-align: left;
+    font-family: Arial, sans-serif;
+}
+
+.impressum-content strong {
+    font-weight: bold;
+    color: #333;
+}
+
+

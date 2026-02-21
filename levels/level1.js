@@ -63,7 +63,7 @@ const level1 = new Level(
     ],
     [
         new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(),
-        new Bottle(), new Bottle(), new Bottle(), new Bottle(),
+        new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(),
         // add a few ground bottles (different image) placed randomly on the ground
         new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true)
     ]

@@ -14,6 +14,9 @@ class World {
     chickenSquashSound = new Audio('audio/audio_chicken-squash.mp3');
     endbossSound = new Audio('audio/audio_endboss-sound.mp3');
     endbossSoundStarted = false;
+    isGameOver = false;
+    gameWonShown = false;
+    gameLoopInterval = null;
 
     constructor(canvas, keyboard, level) {
         this.ctx = canvas.getContext('2d');
@@ -24,9 +27,15 @@ class World {
         this.bottlesCollected = 0;
         this.totalCoins = this.level.coins ? this.level.coins.length : 0;
         this.totalBottles = this.level.bottles ? this.level.bottles.length : 0;
+        
+        // Finde den Endboss im Level
+        this.endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        
         this.backgroundSound.loop = true;
         this.backgroundSound.volume = 0.3;
-        this.backgroundSound.play();
+        if (!isMuted) {
+            this.backgroundSound.play();
+        }
         this.endbossSound.loop = true;
         this.draw();
         this.setWorld();
@@ -35,27 +44,46 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        // Starte Character-Animation
+        this.character.animate();
+        // Starte Animationen für alle Enemies
+        this.level.enemies.forEach((enemy) => {
+            if (enemy.animate) {
+                enemy.animate();
+            }
+        });
     }
 
     run() {
-        setInterval(() => {
-            this.checkCollisions();
-            this.checkThrowableObjects();
-            this.checkEndbossAppearance();
+        this.gameLoopInterval = setInterval(() => {
+            if (!this.isGameOver) {
+                this.checkCollisions();
+                this.checkThrowableObjects();
+                this.checkEndbossAppearance();
+            }
         }, 200);
     }
 
     checkThrowableObjects() {
-        if (this.keyboard.D) {
+        if (this.keyboard.D && this.bottleBar.percent > 0) {
             let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 50);
             this.throwableObjects.push(bottle);
+            // Flasche von Anzahl abziehen
+            this.bottlesCollected--;
+            let percent = 0;
+            if (this.totalBottles > 0) {
+                percent = Math.round((this.bottlesCollected / this.totalBottles) * 100);
+            }
+            this.setBottleBarPercent(percent);
         }
     }
 
     checkEndbossAppearance() {
         // Wenn Character nahe genug am Endboss ist (x > 3500), starte den Sound und Animation
         if (this.character.x > 3500 && !this.endbossSoundStarted) {
-            this.endbossSound.play();
+            if (!isMuted) {
+                this.endbossSound.play();
+            }
             this.endbossSoundStarted = true;
         }
         // Wenn Character in der Nähe, Endboss läuft
@@ -76,8 +104,10 @@ class World {
                     this.character.jump();    // Spieler springt nach dem Quetschen hoch 
                     enemy.squash();          // Chicken wird getroffen
                     // Sound neu erstellen für gleichzeitiges Abspielen
-                    let squashSound = new Audio('audio/audio_chicken-squash.mp3');
-                    squashSound.play();
+                    if (!isMuted) {
+                        let squashSound = new Audio('audio/audio_chicken-squash.mp3');
+                        squashSound.play();
+                    }
                     setTimeout(() => {
                         this.level.enemies = this.level.enemies.filter(e => e !== enemy);
                     }, 500);
@@ -86,8 +116,10 @@ class World {
                     this.character.playAnimation(this.character.IMAGES_HURT);
                     this.statusBar.setPercent(this.character.energy);
                     // Hit-Sound abspielen
-                    let hitSound = new Audio('audio/audio_hit.mp3');
-                    hitSound.play();
+                    if (!isMuted) {
+                        let hitSound = new Audio('audio/audio_hit.mp3');
+                        hitSound.play();
+                    }
                 }
 
             }
@@ -99,14 +131,18 @@ class World {
                 // Nur wenn die Flasche noch nicht auf dem Boden ist (nicht im Splash-Status)
                 if (bottle.isColliding(enemy) && !bottle.hasHitGround) {
                     // Glasbruch-Sound abspielen
-                    let glassSound = new Audio('audio/audio_glass.mp3');
-                    glassSound.play();
+                    if (!isMuted) {
+                        let glassSound = new Audio('audio/audio_glass.mp3');
+                        glassSound.play();
+                    }
                     // Wenn es ein Chicken oder SmallChicken ist, wird es gequetscht
                     if (enemy instanceof Chicken || enemy instanceof SmallChicken) {
                         enemy.squash();
                         // Sound neu erstellen für gleichzeitiges Abspielen
-                        let squashSound = new Audio('audio/audio_chicken-squash.mp3');
-                        squashSound.play();
+                        if (!isMuted) {
+                            let squashSound = new Audio('audio/audio_chicken-squash.mp3');
+                            squashSound.play();
+                        }
                         // Entferne das Chicken nach kurzer Zeit
                         setTimeout(() => {
                             this.level.enemies = this.level.enemies.filter(e => e !== enemy);
@@ -131,8 +167,10 @@ class World {
                     // remove collected coin
                     this.level.coins = this.level.coins.filter(c => c !== coin);
                     // Coin-Sound abspielen
-                    let coinSound = new Audio('audio/audio_collect-coin.mp3');
-                    coinSound.play();
+                    if (!isMuted) {
+                        let coinSound = new Audio('audio/audio_collect-coin.mp3');
+                        coinSound.play();
+                    }
                     let percent = 0;
                     if (this.totalCoins > 0) {
                         percent = Math.round((this.coinsCollected / this.totalCoins) * 100);
@@ -148,8 +186,10 @@ class World {
                     this.bottlesCollected++;
                     this.level.bottles = this.level.bottles.filter(b => b !== bottle);
                     // Flaschen-Sound abspielen
-                    let bottleSound = new Audio('audio/audio_throw-bottle.mp3');
-                    bottleSound.play();
+                    if (!isMuted) {
+                        let bottleSound = new Audio('audio/audio_throw-bottle.mp3');
+                        bottleSound.play();
+                    }
                     let percent = 0;
                     if (this.totalBottles > 0) {
                         percent = Math.round((this.bottlesCollected / this.totalBottles) * 100);
@@ -192,6 +232,26 @@ class World {
 
         this.ctx.translate(-this.camera_x, 0); // Kamera zurücksetzen
 
+        // Überprüfe ob Character tot ist
+        if (this.character.energy <= 0) {
+            this.isGameOver = true;
+            clearInterval(this.gameLoopInterval);
+            showGameOver();
+            return;
+        }
+
+        // Überprüfe ob Endboss besiegt wurde
+        if (this.endboss && this.endboss.isDead && !this.gameWonShown) {
+            this.gameWonShown = true;
+            this.isGameOver = true;
+            // Stoppe nicht sofort den Loop, lass die Animation noch zeichnen
+            // Warte bis Dead-Animation fertig ist (3 Frames × 200ms = 600ms, + 600ms Buffer für vollständige Animation)
+            setTimeout(() => {
+                clearInterval(this.gameLoopInterval);
+                showGameWon();
+            }, 1200);
+            // NICHT return hier! Das würde den Draw-Loop stoppen!
+        }
 
         //Draw() wird immer wieder aufgerufen
         let self = this; // Sicherstellen, dass 'this' im inneren Funktionskontext korrekt referenziert wird

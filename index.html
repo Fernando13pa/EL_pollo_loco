@@ -7,6 +7,10 @@
     <title>El Pollo Loco</title>
     <link rel="shortcut icon" href="img/3_Enemigos/Gallinas/icon-gallina.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
+    
+<!-- Globale Variablen und Start Screen -->
+<script src="js/startscreen.js"></script>
+
 <!-- Modelle -->
  <script src="models/drawable.object.class.js"></script>
 <script src="models/movable-object-class.js"></script>
@@ -35,15 +39,79 @@
 
 </head>
 
-<body onload="init()">
+<body>
 
     <h1>El Pollo Loco</h1>
 
-    <canvas id="canvas" width="720" height="480">
+    <div style="position: relative; display: inline-block;">
+        <canvas id="canvas" width="720" height="480">
+        </canvas>
 
-    </canvas>
+        <div id="startScreen">
+            <div class="button-container">
+                <button class="start-button" onclick="startGame()">START</button>
+                <button class="option-button" onclick="openOptions()">OPTION</button>
+            </div>
+        </div>
 
+        <button id="muteButton" class="mute-button hidden" onclick="toggleMute()" title="Ton ein/aus">
+            <img src="img/9_juego_modelos/iniciar/audio.png" alt="Mute">
+        </button>
 
+        <div id="optionsMenu" class="options-menu hidden">
+            <div class="options-content">
+                <h2>OPTIONS</h2>
+                <button class="option-menu-button" onclick="showControls()">STEUERUNG</button>
+                <button class="option-menu-button" onclick="showGameExplanation()">SPIELERKLÄRUNG</button>
+                <button class="option-menu-button" onclick="showImpressum()">IMPRESSUM</button>
+                <button class="option-menu-button" onclick="closeOptions()">ZURÜCK</button>
+            </div>
+        </div>
+
+        <div id="controlsMenu" class="controls-menu hidden">
+            <div class="controls-content">
+                <h2>STEUERUNG</h2>
+                <p><strong>→ PFEIL RECHTS:</strong> Nach rechts gehen</p>
+                <p><strong>← PFEIL LINKS:</strong> Nach links gehen</p>
+                <p><strong>LEERTASTE:</strong> Springen</p>
+                <p><strong>D TASTE:</strong> Flasche werfen</p>
+                <button class="option-menu-button" onclick="closeControls()">ZURÜCK</button>
+            </div>
+        </div>
+
+        <div id="gameExplanationMenu" class="game-explanation-menu hidden">
+            <div class="game-explanation-content">
+                <h2>SPIELERKLÄRUNG</h2>
+                <p><strong>Ziel des Spiels:</strong> Sammle Münzen und Flaschen und besiege den Endboss!</p>
+                <p><strong>Münzen:</strong> Geben dir Punkte. Sammle alle ein!</p>
+                <p><strong>Flaschen:</strong> Nutze sie um auf Feinde zu werfen und ihnen Schaden zuzufügen.</p>
+                <p><strong>Hühnchen:</strong> Springe auf sie von oben, um sie zu besiegen!</p>
+                <p><strong>Endboss:</strong> Der mächtige Gegner am Ende der Welt. Besiege ihn um zu gewinnen!</p>
+                <button class="option-menu-button" onclick="closeGameExplanation()">ZURÜCK</button>
+            </div>
+        </div>
+
+        <div id="impressumMenu" class="impressum-menu hidden">
+            <div class="impressum-content">
+                <h2>IMPRESSUM</h2>
+                <p><strong>El Pollo Loco Game</strong></p>
+                <p>Ein 2D Platformer Spiel entwickelt mit Vanilla JavaScript und Canvas API.</p>
+                <p><strong>Entwickler:</strong> Fernando13pa</p>
+                <p><strong>Kontakt:</strong> Projekt auf GitHub verfügbar</p>
+                <p><strong>Lizenz:</strong> Diese Spieleressourcen unterliegen den Urheberrechten ihrer Ersteller.</p>
+                <p><strong>Bildmaterial:</strong> Alle Grafiken sind Eigentum des Spiels und dienen nur Demonstrationszwecken.</p>
+                <button class="option-menu-button" onclick="closeImpressum()">ZURÜCK</button>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="game-over-screen hidden">
+            <button class="restart-button" onclick="restartGame()">NEU START</button>
+        </div>
+
+        <div id="gameWonScreen" class="game-won-screen hidden">
+            <button class="restart-button" onclick="restartGame()">NEU START</button>
+        </div>
+    </div>
 
 </body>
 

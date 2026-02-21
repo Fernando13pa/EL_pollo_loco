@@ -17,16 +17,15 @@ class Chicken extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
         this.x = 700 + Math.random() * 4000; // Zufällige Startposition ab 700
         this.speed = 0.15 + Math.random() * 0.5; // Zufällige Geschwindigkeit zwischen 0.15 und 0.4 //
-        this.animate();
     }
 
     animate() {
-        setInterval(() => {
+        this.moveInterval = setInterval(() => {
             if (!this.isSquashed) {
                 this.moveLeft();
             }
         }, 1000 / 60);
-        setInterval(() => {
+        this.animateInterval = setInterval(() => {
             if (this.isSquashed) {
                 this.img = this.imageCache['img/3_Enemigos/Gallinas/2_aplastada/dead.png'];
             } else {

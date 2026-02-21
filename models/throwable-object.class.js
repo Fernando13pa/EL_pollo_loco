@@ -54,8 +54,10 @@ class ThrowableObject extends MovableObject {
                 this.hasHitGround = true;
                 this.speedY = 0;
                 // Glasbruch-Sound abspielen
-                let glassSound = new Audio('audio/audio_glass.mp3');
-                glassSound.play();
+                if (!isMuted) {
+                    let glassSound = new Audio('audio/audio_glass.mp3');
+                    glassSound.play();
+                }
             }
         }, 1000 / 25);
 
