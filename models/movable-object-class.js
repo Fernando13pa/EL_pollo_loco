@@ -31,11 +31,11 @@ class MovableObject extends DrawableObject {
     }
 
     isCollidingWithChicken(enemy) {
-    return this.speedY < 0 && // fällt
+    return this.speedY < 30 && // fällt
         this.y + this.height > enemy.y  &&
         this.x + this.width > enemy.x &&
         this.x < enemy.x + enemy.width &&
-        this.y < enemy.y + enemy.height / 6;
+        this.y < enemy.y + enemy.height / 2; // Kollision nur im oberen Bereich des Huhns
 }
 
 
