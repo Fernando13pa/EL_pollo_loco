@@ -124,6 +124,39 @@ canvas{
     display: none;
 }
 
+/* Settings Button */
+.settings-button {
+    position: absolute;
+    top: 10px;
+    left: calc(50% - 80px);
+    width: 50px;
+    height: 50px;
+    border: none;
+    background-color: rgba(180, 120, 7, 0.9);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.settings-button img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.settings-button:hover {
+    background-color: #B47807;
+    transform: scale(1.1);
+}
+
+.settings-button.hidden {
+    display: none;
+}
+
 /* Game Over Screen */
 .game-over-screen {
     position: absolute;
@@ -132,8 +165,8 @@ canvas{
     width: 100%;
     height: 100%;
     background-image: url('img/Pierde_o\ _gana/You\ lost.png');
-    background-size: 720px 380px;
-    background-position: top center;
+    background-size: 100% 100%;
+    background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;

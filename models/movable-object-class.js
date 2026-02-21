@@ -5,9 +5,10 @@ class MovableObject extends DrawableObject {
     acceleration = 2.5;
     energy = 100;
     lasHit = 0;
+    gravityInterval;
 
     applyGravity() {
-        setInterval(() => {
+        this.gravityInterval = setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;

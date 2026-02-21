@@ -5,6 +5,7 @@ function startGame() {
     const startScreen = document.getElementById('startScreen');
     const canvas = document.getElementById('canvas');
     const muteButton = document.getElementById('muteButton');
+    const settingsButton = document.getElementById('settingsButton');
     
     // Start Screen verstecken
     startScreen.classList.add('hidden');
@@ -12,8 +13,9 @@ function startGame() {
     // Canvas Hintergrundbild entfernen
     canvas.style.backgroundImage = 'none';
     
-    // Mute Button anzeigen
+    // Mute und Settings Button anzeigen
     muteButton.classList.remove('hidden');
+    settingsButton.classList.remove('hidden');
     
     // Spiel initialisieren
     init();
@@ -28,11 +30,19 @@ function openOptions() {
 }
 
 function closeOptions() {
+    const canvas = document.getElementById('canvas');
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
     
-    optionsMenu.classList.add('hidden');
-    startScreen.classList.remove('hidden');
+    // Wenn wir während des Spielens sind, Canvas blur entfernen und Menü verstecken
+    if (typeof world !== 'undefined' && world) {
+        canvas.style.filter = 'none';
+        optionsMenu.classList.add('hidden');
+    } else {
+        // Wenn wir vom StartScreen aus waren, StartScreen anzeigen
+        optionsMenu.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+    }
 }
 
 function showControls() {
@@ -83,6 +93,14 @@ function closeImpressum() {
     optionsMenu.classList.remove('hidden');
 }
 
+function openSettings() {
+    const canvas = document.getElementById('canvas');
+    const optionsMenu = document.getElementById('optionsMenu');
+    
+    canvas.style.filter = 'blur(3px)';
+    optionsMenu.classList.remove('hidden');
+}
+
 function toggleMute() {
     isMuted = !isMuted;
     const muteButton = document.getElementById('muteButton');
@@ -128,12 +146,14 @@ function toggleMute() {
 function showGameOver() {
     const gameOverScreen = document.getElementById('gameOverScreen');
     const muteButton = document.getElementById('muteButton');
+    const settingsButton = document.getElementById('settingsButton');
     
     // Game Over Screen anzeigen
     gameOverScreen.classList.remove('hidden');
     
-    // Mute Button verstecken
+    // Mute und Settings Button verstecken
     muteButton.classList.add('hidden');
+    settingsButton.classList.add('hidden');
     
     // Audio stoppen
     if (typeof world !== 'undefined' && world) {
@@ -144,6 +164,7 @@ function showGameOver() {
         if (world.character) {
             if (world.character.animateInterval) clearInterval(world.character.animateInterval);
             if (world.character.animateInterval2) clearInterval(world.character.animateInterval2);
+            if (world.character.gravityInterval) clearInterval(world.character.gravityInterval);
         }
         
         // Stoppe alle Enemy-Animationen
@@ -153,11 +174,34 @@ function showGameOver() {
                     if (enemy.animateInterval1) clearInterval(enemy.animateInterval1);
                     if (enemy.animateInterval2) clearInterval(enemy.animateInterval2);
                     if (enemy.animateInterval3) clearInterval(enemy.animateInterval3);
+                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
+                    // Reset Endboss animationen state damit er nicht dead aussieht
+                    enemy.isDead = false;
+                    enemy.deadFrameIndex = 0;
                 } else {
                     // Für Chicken und SmallChicken
                     if (enemy.moveInterval) clearInterval(enemy.moveInterval);
                     if (enemy.animateInterval) clearInterval(enemy.animateInterval);
+                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
                 }
+            });
+        }
+        
+        // Stoppe alle Clouds
+        if (world.level && world.level.clouds) {
+            world.level.clouds.forEach(cloud => {
+                if (cloud.cloudMoveInterval) clearInterval(cloud.cloudMoveInterval);
+                if (cloud.gravityInterval) clearInterval(cloud.gravityInterval);
+            });
+        }
+        
+        // Stoppe alle Throwable Objects (Flaschen)
+        if (world.throwableObjects && world.throwableObjects.length > 0) {
+            world.throwableObjects.forEach(bottle => {
+                if (bottle.gravityInterval) clearInterval(bottle.gravityInterval);
+                if (bottle.throwMoveInterval) clearInterval(bottle.throwMoveInterval);
+                if (bottle.throwAnimationInterval) clearInterval(bottle.throwAnimationInterval);
+                if (bottle.throwGroundCheckInterval) clearInterval(bottle.throwGroundCheckInterval);
             });
         }
         
@@ -169,12 +213,14 @@ function showGameOver() {
 function showGameWon() {
     const gameWonScreen = document.getElementById('gameWonScreen');
     const muteButton = document.getElementById('muteButton');
+    const settingsButton = document.getElementById('settingsButton');
     
     // Game Won Screen anzeigen
     gameWonScreen.classList.remove('hidden');
     
-    // Mute Button verstecken
+    // Mute und Settings Button verstecken
     muteButton.classList.add('hidden');
+    settingsButton.classList.add('hidden');
     
     // Audio stoppen und alle Animationen stoppen
     if (typeof world !== 'undefined' && world) {
@@ -244,7 +290,26 @@ function restartGame() {
                     // Für Chicken und SmallChicken - BEIDE Intervals!
                     if (enemy.moveInterval) clearInterval(enemy.moveInterval);
                     if (enemy.animateInterval) clearInterval(enemy.animateInterval);
+                    if (enemy.gravityInterval) clearInterval(enemy.gravityInterval);
                 }
+            });
+        }
+        
+        // Stoppe alle Clouds
+        if (world.level && world.level.clouds) {
+            world.level.clouds.forEach(cloud => {
+                if (cloud.cloudMoveInterval) clearInterval(cloud.cloudMoveInterval);
+                if (cloud.gravityInterval) clearInterval(cloud.gravityInterval);
+            });
+        }
+        
+        // Stoppe alle Throwable Objects (Flaschen)
+        if (world.throwableObjects && world.throwableObjects.length > 0) {
+            world.throwableObjects.forEach(bottle => {
+                if (bottle.gravityInterval) clearInterval(bottle.gravityInterval);
+                if (bottle.throwMoveInterval) clearInterval(bottle.throwMoveInterval);
+                if (bottle.throwAnimationInterval) clearInterval(bottle.throwAnimationInterval);
+                if (bottle.throwGroundCheckInterval) clearInterval(bottle.throwGroundCheckInterval);
             });
         }
         
@@ -265,13 +330,16 @@ function restartGame() {
     // Reset isMuted state
     isMuted = false;
     const muteButton = document.getElementById('muteButton');
+    const settingsButton = document.getElementById('settingsButton');
     muteButton.classList.add('hidden');
+    settingsButton.classList.add('hidden');
     muteButton.style.opacity = '1';
     
     // Neues Spiel starten
     init();
     
-    // Mute Button anzeigen
+    // Mute und Settings Button anzeigen
     muteButton.classList.remove('hidden');
+    settingsButton.classList.remove('hidden');
 }
 
