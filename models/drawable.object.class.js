@@ -1,24 +1,36 @@
 class DrawableObject {
     x = 120;
-    // y = 280;
     img;
     imageCache = {};
     currentImageIndex = 0;
     height = 150;
     width = 100;
+    collisionOffsets = { left: 0, right: 0, top: 0 };
 
-
+    /**
+     * Loads a single image
+     * @param {string} path - The path to the image
+     */
     loadImage(path) {
-        this.img = new Image();     // Create a new image object// this.img = documentgetElementById('img') <img id="image" src="...">
+        this.img = new Image();
         this.img.src = path;
     }
 
+    /**
+     * Draws the object on the canvas
+     * @param {CanvasRenderingContext2D} ctx - The canvas context
+     */
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
 
+    /**
+     * Draws a debug frame around certain objects
+     * @param {CanvasRenderingContext2D} ctx - The canvas context
+     */
     drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof SmallChicken || this instanceof Endboss) {
+        if (this instanceof Character || this instanceof Chicken || 
+            this instanceof SmallChicken || this instanceof Endboss) {
             ctx.beginPath();
             ctx.lineWidth = '5';
             ctx.strokeStyle = 'blue';
@@ -27,6 +39,25 @@ class DrawableObject {
         }
     }
 
+    /**
+     * Gets collision bounds considering offsets
+     * @returns {Object} Collision bounds with left, right, top, bottom
+     */
+    getCollisionBounds() {
+        const leftOffset = Math.max(0, this.collisionOffsets?.left ?? 0);
+        const rightOffset = Math.max(0, this.collisionOffsets?.right ?? 0);
+        const topOffset = Math.max(0, this.collisionOffsets?.top ?? 0);
+        const left = this.x + leftOffset;
+        const right = this.x + this.width - rightOffset;
+        const top = this.y + topOffset;
+        const bottom = this.y + this.height;
+        return { left, right, top, bottom };
+    }
+
+    /**
+     * Loads multiple images and stores them in cache
+     * @param {Array} arr - Array with image paths
+     */
     loadImages(arr) {
         arr.forEach((path) => {
             let img = new Image();

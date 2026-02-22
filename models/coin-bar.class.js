@@ -1,3 +1,6 @@
+/**
+ * Coin display (Coin Bar) - shows collected coins in 6 levels
+ */
 class CoinBar extends DrawableObject {
     IMAGES = [
         'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/0.png',
@@ -9,6 +12,9 @@ class CoinBar extends DrawableObject {
     ];
     percent = 100;
 
+    /**
+     * Constructor - loads images and sets position
+     */
     constructor() {
         super().loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);
@@ -19,12 +25,20 @@ class CoinBar extends DrawableObject {
         this.setPercent(0);
     }
 
+    /**
+     * Sets the coin percentage and updates the image
+     * @param {number} percent - The percentage (0-100)
+     */
     setPercent(percent) {
         this.percent = percent;
         let path = this.IMAGES[this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }
 
+    /**
+     * Determines which image is displayed based on percentage
+     * @returns {number} Index of the image to display
+     */
     resolveImageIndex() {
         if (this.percent == 100) {
             return 5;
@@ -40,5 +54,4 @@ class CoinBar extends DrawableObject {
             return 0;
         }
     }
-
 }

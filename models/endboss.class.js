@@ -11,6 +11,7 @@ class Endboss extends MovableObject {
     deadFrameIndex = 0;
     elapsedTime = 0;
     energy = 100;
+    hasStartedAttacking = false;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -53,6 +54,9 @@ class Endboss extends MovableObject {
         'img/4_Enemigos_jefes/5_muerta/G26.png'
     ];
 
+    /**
+     * Constructor - loads all images and sets position
+     */
     constructor() {
         super().loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
@@ -63,74 +67,166 @@ class Endboss extends MovableObject {
         this.x = 3800;
     }
 
+    /**
+     * Starts all animation intervals for endboss behavior
+     */
     animate() {
-        // Animation Loop
+        this.animateStates();
+        this.initializeAttackCycle();
+        this.runAttackCycle();
+    }
+
+    /**
+     * Animates the various states of the endboss
+     */
+    animateStates() {
         this.animateInterval1 = setInterval(() => {
-            // Wenn Endboss tot: Zeige Death-Animation (einmal)
+            if (isPaused) return;
             if (this.isDead) {
-                if (this.deadFrameIndex < this.IMAGES_DEAD.length) {
-                    // Zeige das aktuelle Dead-Frame
-                    this.img = this.imageCache[this.IMAGES_DEAD[this.deadFrameIndex]];
-                    this.deadFrameIndex++;
-                } 
-                // Wenn Animation fertig: Zeige das letzte Frame
-                // (deadFrameIndex >= IMAGES_DEAD.length, img bleibt beim letzten Frame)
-            }
-            // Wenn Character in der Nähe: Verhalten basierend auf Status
-            else if (this.isCharacterNear) {
-                if (this.isHurt) {
-                    this.playAnimation(this.IMAGES_HURT);
-                } else if (this.isAttacking) {
-                    this.playAnimation(this.IMAGES_ATTACK);
-                } else if (this.isRunning) {
-                    this.playAnimation(this.IMAGES_WALKING);
-                    this.moveLeft();
-                } else {
-                    this.playAnimation(this.IMAGES_ALERT);
-                }
+                this.playDeathAnimation();
+            } else if (this.isCharacterNear) {
+                this.playBehaviorAnimation();
             }
         }, 200);
         addInterval(this.animateInterval1);
+    }
 
-        // Zyklus: 1 Sekunde stehen (ALERT), dann 2 Sekunden laufen (WALKING)
+    /**
+     * Plays the death animation (only once)
+     */
+    playDeathAnimation() {
+        if (this.deadFrameIndex < this.IMAGES_DEAD.length) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.deadFrameIndex]];
+            this.deadFrameIndex++;
+        }
+    }
+
+    /**
+     * Plays the animation based on current behavior
+     */
+    playBehaviorAnimation() {
+        if (this.isHurt) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else if (this.isAttacking) {
+            this.playAnimation(this.IMAGES_ATTACK);
+        } else if (this.isRunning) {
+            this.playAnimation(this.IMAGES_WALKING);
+            this.moveLeft();
+        } else {
+            this.playAnimation(this.IMAGES_ALERT);
+        }
+    }
+
+    /**
+     * Initializes the attack cycle after first alert
+     */
+    initializeAttackCycle() {
         this.animateInterval2 = setInterval(() => {
-            if (this.isCharacterNear && !this.isHurt && !this.isDead) {
-                this.isRunning = true;
-                // Nach 2 Sekunden wieder stehen
+            if (isPaused) return;
+            if (this.isCharacterNear && !this.hasStartedAttacking && !this.isHurt && !this.isDead) {
                 setTimeout(() => {
-                    this.isRunning = false;
-                }, 2000);
+                    this.hasStartedAttacking = true;
+                }, 1000);
             }
-        }, 3000);
+        }, 100);
         addInterval(this.animateInterval2);
+    }
 
-        // Angriff-Zyklus: Alle 4 Sekunden angreifen für 2 Sekunden
+    /**
+     * Executes the attack cycle (Alert → Attack → Walking)
+     */
+    runAttackCycle() {
         this.animateInterval3 = setInterval(() => {
-            if (this.isCharacterNear && !this.isHurt && !this.isDead) {
-                this.isAttacking = true;
-                // Nach 2 Sekunden Attack stoppen
-                setTimeout(() => {
-                    this.isAttacking = false;
-                }, 2000);
+            if (isPaused) return;
+            if (this.isCharacterNear && this.hasStartedAttacking && !this.isHurt && !this.isDead) {
+                this.executeAttackPhases();
             }
-        }, 4000);
+        }, 8000);
         addInterval(this.animateInterval3);
     }
 
+    /**
+     * Executes the 4 phases of the attack
+     */
+    executeAttackPhases() {
+        this.startAlertPhase();
+        this.scheduleAttackPhase();
+        this.scheduleWalkingPhase();
+        this.scheduleEndPhase();
+    }
+
+    /**
+     * Phase 1: Alert animation (1 second)
+     */
+    startAlertPhase() {
+        this.isAttacking = false;
+        this.isRunning = false;
+    }
+
+    /**
+     * Phase 2: Attack after 1 second
+     */
+    scheduleAttackPhase() {
+        setTimeout(() => {
+            if (!this.isHurt && !this.isDead) {
+                this.isAttacking = true;
+                this.isRunning = false;
+            }
+        }, 1000);
+    }
+
+    /**
+     * Phase 3: Walking phase after 2 seconds (runs for 6 seconds)
+     */
+    scheduleWalkingPhase() {
+        setTimeout(() => {
+            if (!this.isHurt && !this.isDead) {
+                this.isAttacking = false;
+                this.isRunning = true;
+                this.playWalkingSound();
+            }
+        }, 2000);
+    }
+
+    /**
+     * Plays walking sound
+     */
+    playWalkingSound() {
+        if (!isMuted) {
+            let walkingSound = new Audio('audio/audio_chicken-alarm.mp3');
+            walkingSound.play().catch(() => {});
+        }
+    }
+
+    /**
+     * Phase 4: Stop walking after 8 seconds
+     */
+    scheduleEndPhase() {
+        setTimeout(() => {
+            if (!this.isHurt && !this.isDead) {
+                this.isRunning = false;
+            }
+        }, 8000);
+    }
+
+    /**
+     * Called when endboss is hit
+     */
     getHurt() {
         this.isHurt = true;
         this.energy -= 20;
-        // Prüfe ob Endboss tot ist
         if (this.energy <= 0) {
             this.die();
         } else {
-            // Nach 1 Sekunde zurück zur normalen Animation
             setTimeout(() => {
                 this.isHurt = false;
             }, 1000);
         }
     }
 
+    /**
+     * Sets endboss to dead
+     */
     die() {
         this.isDead = true;
         this.isRunning = false;

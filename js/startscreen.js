@@ -1,299 +1,333 @@
-// Start Screen Funktionalität
+// Start screen functionality
 let isMuted = false;
-let isPaused = false;  // Globales Pause-Flag für Settings Menü
+let isPaused = false;
 let intervalIds = [];
-let menuOpen = false;  // Tracke ob Settings Menu offen ist
-let pausedIntervals = [];  // Speichere pausierte Game Loop
+let menuOpen = false;
+let pausedIntervals = [];
 
+/**
+ * Adds an interval to the global list for later cleanup
+ * @param {number} intervalId - The ID of the interval
+ */
 function addInterval(intervalId) {
-    if (intervalId) {
-        intervalIds.push(intervalId);
-    }
+    if (intervalId) intervalIds.push(intervalId);
 }
 
+/**
+ * Clears all registered intervals and empties the list
+ */
 function resetIntervals() {
     intervalIds.forEach(clearInterval);
     intervalIds = [];
 }
 
+/**
+ * Starts the game - hides start screen and initializes World
+ */
 function startGame() {
-    console.log('🎮 startGame() aufgerufen');
     const startScreen = document.getElementById('startScreen');
     const canvas = document.getElementById('canvas');
     const muteButton = document.getElementById('muteButton');
     const settingsButton = document.getElementById('settingsButton');
-    
-    // Start Screen verstecken
     startScreen.classList.add('hidden');
-    
-    // Canvas Hintergrundbild entfernen
     canvas.style.backgroundImage = 'none';
-    
-    // Mute und Settings Button anzeigen
     muteButton.classList.remove('hidden');
     settingsButton.classList.remove('hidden');
-    
-    // Spiel initialisieren
-    console.log('   Rufe init() auf...');
     init();
-    console.log('   World wurde erstellt und Game Loop gestartet');
-    console.log('   world.gameLoopInterval:', world.gameLoopInterval);
 }
 
+/**
+ * Opens the options menu from the start screen
+ */
 function openOptions() {
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
-    
     startScreen.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
 }
 
+/**
+ * Closes the options menu - returns to game or start screen
+ */
 function closeOptions() {
-    console.log('👈 closeOptions() aufgerufen');
     const canvas = document.getElementById('canvas');
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
-    
-    // Wenn wir während des Spielens sind, Canvas blur entfernen und Menü verstecken
     if (typeof world !== 'undefined' && world) {
-        console.log('   World existiert - wir waren während des Spielens');
         canvas.style.filter = 'none';
         optionsMenu.classList.add('hidden');
-        menuOpen = false;  // Menü ist jetzt zu
-        console.log('   Settings Menü wurde geschlossen');
-        // Starte das Spiel wieder wenn es pausiert war
+        menuOpen = false;
         resumeGame();
     } else {
-        console.log('   World existiert nicht - wir waren im StartScreen');
-        // Wenn wir vom StartScreen aus waren, StartScreen anzeigen
         optionsMenu.classList.add('hidden');
         startScreen.classList.remove('hidden');
         menuOpen = false;
     }
 }
 
+/**
+ * Shows the controls menu
+ */
 function showControls() {
     const optionsMenu = document.getElementById('optionsMenu');
     const controlsMenu = document.getElementById('controlsMenu');
-    
     optionsMenu.classList.add('hidden');
     controlsMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Closes the controls menu
+ */
 function closeControls() {
     const optionsMenu = document.getElementById('optionsMenu');
     const controlsMenu = document.getElementById('controlsMenu');
-    
     controlsMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Shows the game explanation menu
+ */
 function showGameExplanation() {
     const optionsMenu = document.getElementById('optionsMenu');
     const gameExplanationMenu = document.getElementById('gameExplanationMenu');
-    
     optionsMenu.classList.add('hidden');
     gameExplanationMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Closes the game explanation menu
+ */
 function closeGameExplanation() {
     const optionsMenu = document.getElementById('optionsMenu');
     const gameExplanationMenu = document.getElementById('gameExplanationMenu');
-    
     gameExplanationMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Shows the impressum menu
+ */
 function showImpressum() {
     const optionsMenu = document.getElementById('optionsMenu');
     const impressumMenu = document.getElementById('impressumMenu');
-    
     optionsMenu.classList.add('hidden');
     impressumMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Closes the impressum menu
+ */
 function closeImpressum() {
     const optionsMenu = document.getElementById('optionsMenu');
     const impressumMenu = document.getElementById('impressumMenu');
-    
     impressumMenu.classList.add('hidden');
     optionsMenu.classList.remove('hidden');
-    // Spiel bleibt pausiert
 }
 
+/**
+ * Opens the settings menu during gameplay and pauses the game
+ */
 function openSettings() {
-    console.log('👉 openSettings() aufgerufen');
     const canvas = document.getElementById('canvas');
     const optionsMenu = document.getElementById('optionsMenu');
-    
     canvas.style.filter = 'blur(3px)';
     optionsMenu.classList.remove('hidden');
-    menuOpen = true;  // Menü ist jetzt offen
-    console.log('   Settings Menü wurde geöffnet');
-    // Pausiere das Spiel
+    menuOpen = true;
     pauseGame();
 }
 
+/**
+ * Pauses the game - stops game loop and sets isPaused flag
+ */
 function pauseGame() {
-    console.log('🔴 pauseGame() aufgerufen');
-    // Pausiere nur wenn wir spielen
     if (typeof world !== 'undefined' && world) {
-        console.log('   World existiert:', !!world);
-        console.log('   gameLoopInterval existiert:', !!world.gameLoopInterval);
-        // Speichere die Game Loop Interval ID bevor wir sie pausieren
         if (world.gameLoopInterval) {
-            console.log('   Stoppe gameLoopInterval');
             clearInterval(world.gameLoopInterval);
-            world.gameLoopInterval = null;  // Setze auf null damit resumeGame() weiß, dass es pausiert ist
+            world.gameLoopInterval = null;
         }
-        // Setze globales isPaused Flag damit alle setIntervals stoppen
         isPaused = true;
-        console.log('   Global isPaused Flag gesetzt zu: true');
     }
 }
 
+/**
+ * Resumes the game - sets isPaused to false and restarts game loop
+ */
 function resumeGame() {
-    console.log('🟢 resumeGame() aufgerufen');
-    // Starte das Spiel wieder wenn wir spielen und nichts Schlimmes passiert ist
     if (typeof world !== 'undefined' && world && !world.isGameOver) {
-        console.log('   World existiert:', !!world);
-        console.log('   isGameOver:', world.isGameOver);
-        console.log('   gameLoopInterval existiert:', !!world.gameLoopInterval);
-        // Setze globales isPaused Flag auf false damit alle setIntervals weiterlaufen
         isPaused = false;
-        console.log('   Global isPaused Flag gesetzt zu: false');
-        // Falls die Game Loop pausiert ist, starten wir sie erneut
         if (!world.gameLoopInterval) {
-            console.log('   Starte Game Loop neu');
-            world.run();  // Starte die Game Loop neu
-        } else {
-            console.log('   Game Loop läuft bereits!');
+            world.run();
         }
-    } else {
-        console.log('   FEHLER: Kann nicht fortsetzen - world oder isGameOver Problem');
     }
 }
 
+/**
+ * Toggles sound on/off - controls all audio elements in the game
+ */
 function toggleMute() {
     isMuted = !isMuted;
     const muteButton = document.getElementById('muteButton');
-    
-    // World Audio-Elemente muten/unmuten
     if (typeof world !== 'undefined' && world) {
-        if (isMuted) {
-            // Alle Sounds stoppen und auf Volume 0 setzen
-            world.backgroundSound.pause();
-            world.backgroundSound.currentTime = 0;
-            world.backgroundSound.volume = 0;
-            
-            world.endbossSound.pause();
-            world.endbossSound.currentTime = 0;
-            world.endbossSound.volume = 0;
-            
-            if (world.character) {
-                world.character.runningSound.pause();
-                world.character.runningSound.currentTime = 0;
-                world.character.runningSound.volume = 0;
-                
-                world.character.jumpSound.pause();
-                world.character.jumpSound.currentTime = 0;
-                world.character.jumpSound.volume = 0;
-            }
-            muteButton.style.opacity = '0.5';
-        } else {
-            // Audio volumes wieder aktivieren
-            world.backgroundSound.volume = 0.3;
-            world.backgroundSound.play();
-            
-            world.endbossSound.volume = 1;
-            
-            if (world.character) {
-                world.character.runningSound.volume = 0.5;
-                world.character.jumpSound.volume = 1;
-            }
-            muteButton.style.opacity = '1';
-        }
+        isMuted ? muteAllSounds(muteButton) : unmuteAllSounds(muteButton);
     }
 }
 
+/**
+ * Mutes all sounds
+ * @param {HTMLElement} muteButton - The mute button
+ */
+function muteAllSounds(muteButton) {
+    world.backgroundSound.pause();
+    world.backgroundSound.volume = 0;
+    world.endbossSound.pause();
+    world.endbossSound.volume = 0;
+    if (world.character) {
+        world.character.runningSound.pause();
+        world.character.runningSound.volume = 0;
+        world.character.jumpSound.volume = 0;
+    }
+    muteButton.style.opacity = '0.5';
+}
+
+/**
+ * Unmutes all sounds
+ * @param {HTMLElement} muteButton - The mute button
+ */
+function unmuteAllSounds(muteButton) {
+    world.backgroundSound.volume = 0.3;
+    world.backgroundSound.play().catch(() => {});
+    world.endbossSound.volume = 1;
+    if (world.character) {
+        world.character.runningSound.volume = 0.5;
+        world.character.jumpSound.volume = 1;
+    }
+    muteButton.style.opacity = '1';
+}
+
+/**
+ * Shows game over screen and stops all sounds/intervals
+ */
 function showGameOver() {
     const gameOverScreen = document.getElementById('gameOverScreen');
     const muteButton = document.getElementById('muteButton');
     const settingsButton = document.getElementById('settingsButton');
-    
-    // Game Over Screen anzeigen
     gameOverScreen.classList.remove('hidden');
-    
-    // Mute und Settings Button verstecken
     muteButton.classList.add('hidden');
     settingsButton.classList.add('hidden');
-    
-    // Audio stoppen
     if (typeof world !== 'undefined' && world) {
-        // Stoppe alle Intervals
         resetIntervals();
-        
-        // Reset Endboss damit er nicht tot aussieht
-        if (world.level && world.level.enemies) {
-            world.level.enemies.forEach(enemy => {
-                if (enemy instanceof Endboss) {
-                    enemy.isDead = false;
-                    enemy.deadFrameIndex = 0;
-                }
-            });
-        }
-        
-        // Stoppe Audio
+        resetEndbossState();
         world.backgroundSound.pause();
         world.endbossSound.pause();
     }
 }
 
+/**
+ * Resets endboss status so it doesn't look dead
+ */
+function resetEndbossState() {
+    if (world.level && world.level.enemies) {
+        world.level.enemies.forEach(enemy => {
+            if (enemy instanceof Endboss) {
+                enemy.isDead = false;
+                enemy.deadFrameIndex = 0;
+            }
+        });
+    }
+}
+
+/**
+ * Shows game won screen and plays victory sound
+ */
 function showGameWon() {
     const gameWonScreen = document.getElementById('gameWonScreen');
     const muteButton = document.getElementById('muteButton');
     const settingsButton = document.getElementById('settingsButton');
-    
-    // Game Won Screen anzeigen
     gameWonScreen.classList.remove('hidden');
-    
-    // Mute und Settings Button verstecken
     muteButton.classList.add('hidden');
     settingsButton.classList.add('hidden');
-    
-    // Audio stoppen und alle Animationen stoppen
     if (typeof world !== 'undefined' && world) {
-        // Stoppe alle Intervals
         resetIntervals();
-        
-        // Stoppe Audio
-        world.backgroundSound.pause();
-        world.endbossSound.pause();
+        stopAllSounds();
+    }
+    if (!isMuted) {
+        let winSound = new Audio('audio/audio_win (1).mp3');
+        winSound.play().catch(() => {});
     }
 }
 
+/**
+ * Stops all sounds in the game
+ */
+function stopAllSounds() {
+    world.backgroundSound.pause();
+    world.endbossSound.pause();
+    if (world.character) {
+        world.character.runningSound.pause();
+        world.character.runningSound.currentTime = 0;
+        world.character.jumpSound.pause();
+        world.character.jumpSound.currentTime = 0;
+    }
+}
+
+/**
+ * Restarts the game from the beginning - deletes old world and creates new one
+ */
 function restartGame() {
-    // Game Over Screen und Game Won Screen verstecken
-    const gameOverScreen = document.getElementById('gameOverScreen');
-    const gameWonScreen = document.getElementById('gameWonScreen');
-    gameOverScreen.classList.add('hidden');
-    gameWonScreen.classList.add('hidden');
-    
-    // Alle Intervals clearen und World zerstören
+    hideAllScreens();
     resetIntervals();
+    resetStaticPositions();
     if (typeof world !== 'undefined' && world) {
+        world.isActive = false;
+        stopWorldSounds();
         world = null;
     }
-    
-    // Reset isMuted state
     isMuted = false;
-    
-    // Starte das Spiel neu
+    isPaused = false;
     startGame();
+}
+
+/**
+ * Hides all game over/won/menu screens
+ */
+function hideAllScreens() {
+    document.getElementById('gameOverScreen').classList.add('hidden');
+    document.getElementById('gameWonScreen').classList.add('hidden');
+    document.getElementById('optionsMenu').classList.add('hidden');
+    document.getElementById('controlsMenu').classList.add('hidden');
+    document.getElementById('gameExplanationMenu').classList.add('hidden');
+    document.getElementById('impressumMenu').classList.add('hidden');
+    const canvas = document.getElementById('canvas');
+    canvas.style.filter = 'none';
+    menuOpen = false;
+}
+
+/**
+ * Stops all world sounds before restart
+ */
+function stopWorldSounds() {
+    if (world.backgroundSound) {
+        world.backgroundSound.pause();
+        world.backgroundSound.currentTime = 0;
+    }
+    if (world.endbossSound) {
+        world.endbossSound.pause();
+        world.endbossSound.currentTime = 0;
+    }
+    if (world.character) {
+        world.character.runningSound.pause();
+        world.character.runningSound.currentTime = 0;
+        world.character.jumpSound.pause();
+        world.character.jumpSound.currentTime = 0;
+    }
+}
+
+/**
+ * Resets static position arrays of item classes
+ */
+function resetStaticPositions() {
+    Coin.placedPositions = [];
+    Bottle.placedPositions = [];
 }
 

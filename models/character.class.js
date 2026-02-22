@@ -2,7 +2,7 @@ class Character extends MovableObject {
     height = 280;
     y = 150;
     speed = 10;
-    
+    collisionOffsets = { left: 12, right: 12, top: 120 };
 
     IMAGES_STILL = ['img/2_Pepe_figura/1_parado/tranquilo/I-1.png',
         'img/2_Pepe_figura/1_parado/tranquilo/I-2.png',
@@ -55,6 +55,9 @@ class Character extends MovableObject {
     runningSound = new Audio('audio/audio_running.mp3');
 
 
+    /**
+     * Constructor - loads all images and starts gravity
+     */
     constructor() {
         super().loadImage('img/2_Pepe_figura/1_parado/tranquilo/I-1.png');
         this.loadImages(this.IMAGES_STILL);
@@ -65,56 +68,95 @@ class Character extends MovableObject {
         this.runningSound.loop = true;
         this.applyGravity();
     }
+
+    /**
+     * Starts both animation intervals (movement and display)
+     */
     animate() {
+        this.animateMovement();
+        this.animateCharacterState();
+    }
+
+    /**
+     * Controls character movement based on keyboard input
+     */
+    animateMovement() {
         this.animateInterval = setInterval(() => {
-            // Pausieren wenn Settings Menü offen ist
             if (isPaused) return;
-        
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.otherDirection = false;
-            }
-            if (this.world.keyboard.LEFT && this.x > 0) {
-                this.moveLeft();
-                this.otherDirection = true;
-            }
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.jump();
-                if (!isMuted) {
-                    this.jumpSound.play();
-                }
-            }
+            this.handleMovementInput();
             this.world.camera_x = -this.x + 120;
         }, 1000 / 60);
         addInterval(this.animateInterval);
+    }
 
+    /**
+     * Processes keyboard input for movement and jump
+     */
+    handleMovementInput() {
+        if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            this.moveRight();
+            this.otherDirection = false;
+        }
+        if (this.world.keyboard.LEFT && this.x > 0) {
+            this.moveLeft();
+            this.otherDirection = true;
+        }
+        if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+            this.jump();
+            if (!isMuted) this.jumpSound.play().catch(() => {});
+        }
+    }
 
+    /**
+     * Selects and plays the correct animation based on character status
+     */
+    animateCharacterState() {
         this.animateInterval2 = setInterval(() => {
-            // Pausieren wenn Settings Menü offen ist
             if (isPaused) return;
-
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-                this.runningSound.pause();
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            }
-            else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-                this.runningSound.pause();
-            } else {
-                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    this.playAnimation(this.IMAGES_WALKING);
-                    if (!isMuted) {
-                        this.runningSound.play();
-                    }
-                } else {
-                    this.playAnimation(this.IMAGES_STILL);
-                    this.runningSound.pause();
-                }
-            }
-
+            this.selectAndPlayAnimation();
         }, 50);
         addInterval(this.animateInterval2);
+    }
+
+    /**
+     * Takes damage from collision with enemy
+     */
+    hit() {
+        this.energy -= 1;
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lasHit = new Date().getTime();
+        }
+    }
+
+    /**
+     * Determines which animation should be played (dead, hurt, jump, running, standing)
+     */
+    selectAndPlayAnimation() {
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+            this.runningSound.pause();
+        } else if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else if (this.isAboveGround()) {
+            this.playAnimation(this.IMAGES_JUMPING);
+            this.runningSound.pause();
+        } else {
+            this.handleGroundAnimation();
+        }
+    }
+
+    /**
+     * Plays animation when character is on ground (running or standing)
+     */
+    handleGroundAnimation() {
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(this.IMAGES_WALKING);
+            if (!isMuted) this.runningSound.play().catch(() => {});
+        } else {
+            this.playAnimation(this.IMAGES_STILL);
+            this.runningSound.pause();
+        }
     }
 }

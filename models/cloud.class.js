@@ -5,20 +5,23 @@ class Cloud extends MovableObject {
     height = 250;
     cloudMoveInterval;
 
+    /**
+     * Constructor - loads cloud image and starts animation
+     */
     constructor() {
         super().loadImage('img/5_Fondo/fondos/4_nubes/1.png');
-        this.x = Math.random() * 500; // Zufällige y-Position zwischen 0 und 150
+        this.x = Math.random() * 500;
         this.animate();
     }
 
+    /**
+     * Starts movement of cloud to the left
+     */
     animate() {
         this.cloudMoveInterval = setInterval(() => {
-            // Pausieren wenn Settings Menü offen ist
             if (isPaused) return;
-            
             this.moveLeft();
         }, 1000 / 60);
         addInterval(this.cloudMoveInterval);
     }
-
 } 
