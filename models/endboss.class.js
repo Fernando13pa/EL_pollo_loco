@@ -9,6 +9,9 @@ class Endboss extends MovableObject {
     isHurt = false;
     isDead = false;
     deadFrameIndex = 0;
+    deadAnimationLoops = 0;
+    deadAnimationMaxLoops = 3;
+    deathAnimationIntervalMs = 200;
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
@@ -87,7 +90,7 @@ class Endboss extends MovableObject {
             } else if (this.isCharacterNear) {
                 this.playBehaviorAnimation();
             }
-        }, 200);
+        }, this.deathAnimationIntervalMs);
         addInterval(this.animateInterval1);
     }
 
@@ -95,9 +98,17 @@ class Endboss extends MovableObject {
      * Plays the death animation (only once)
      */
     playDeathAnimation() {
-        if (this.deadFrameIndex < this.IMAGES_DEAD.length) {
-            this.img = this.imageCache[this.IMAGES_DEAD[this.deadFrameIndex]];
-            this.deadFrameIndex++;
+        if (this.deadAnimationLoops >= this.deadAnimationMaxLoops) {
+            this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
+            return;
+        }
+        this.img = this.imageCache[this.IMAGES_DEAD[this.deadFrameIndex]];
+        this.deadFrameIndex++;
+        if (this.deadFrameIndex >= this.IMAGES_DEAD.length) {
+            this.deadAnimationLoops++;
+            if (this.deadAnimationLoops < this.deadAnimationMaxLoops) {
+                this.deadFrameIndex = 0;
+            }
         }
     }
 
@@ -231,6 +242,13 @@ class Endboss extends MovableObject {
         this.isDead = true;
         this.isRunning = false;
         this.isAttacking = false;
+    }
+
+    /**
+     * Gibt die gesamte Dauer der Todesanimation in ms zurück
+     */
+    getDeathAnimationDurationMs() {
+        return this.deathAnimationIntervalMs * this.IMAGES_DEAD.length * this.deadAnimationMaxLoops;
     }
 
 }

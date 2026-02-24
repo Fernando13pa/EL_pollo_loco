@@ -122,7 +122,7 @@ class Character extends MovableObject {
      * Takes damage from collision with enemy
      */
     hit() {
-        this.energy -= 1;
+        this.energy -= 10;
         if (this.energy < 0) {
             this.energy = 0;
         } else {

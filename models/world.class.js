@@ -168,9 +168,10 @@ class World {
         this.level.enemies.forEach((enemy) => {
             if (!this.character.isColliding(enemy)) return;
             if (enemy.energy == 0) return;
-            if (this.character.isCollidingFromAbove(enemy)) {
+            const isFromAbove = this.character.isCollidingFromAbove(enemy);
+            if (isFromAbove) {
                 this.handleJumpOnEnemy(enemy);
-            } else if (this.character.isCollidingFromSide(enemy)) {
+            } else {
                 this.handleSideCollisionWithEnemy(enemy);
             }
         });
@@ -210,6 +211,9 @@ class World {
      */
     cleanupDeadEnemies() {
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
+            if (this.level.enemies[i] instanceof Endboss) {
+                continue;
+            }
             if (this.level.enemies[i].energy == 0) {
                 this.level.enemies.splice(i, 1);
             }
@@ -459,10 +463,13 @@ class World {
     handleGameWon() {
         this.gameWonShown = true;
         this.isGameOver = true;
+        const deathAnimationDuration = this.endboss && this.endboss.getDeathAnimationDurationMs
+            ? this.endboss.getDeathAnimationDurationMs()
+            : 1200;
         setTimeout(() => {
             clearInterval(this.gameLoopInterval);
             showGameWon();
-        }, 1200);
+        }, deathAnimationDuration);
     }
     /**
      * Fügt ein Array von Objekten zur Map hinzu

@@ -73,7 +73,8 @@ class MovableObject extends DrawableObject {
      */
     isCollidingFromAbove(enemy) {
         if (!this.isColliding(enemy)) return false;
-        if (this.speedY > 0) return false;
+        if (!this.isAboveGround()) return false;
+        if (this.speedY >= 0) return false;
         const characterBottom = this.y + this.height;
         const enemyTop = enemy.y;
         const tolerance = enemy.height < 50 ? 20 : 35;

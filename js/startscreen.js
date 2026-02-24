@@ -232,6 +232,7 @@ function resetEndbossState() {
             if (enemy instanceof Endboss) {
                 enemy.isDead = false;
                 enemy.deadFrameIndex = 0;
+                enemy.deadAnimationLoops = 0;
             }
         });
     }
