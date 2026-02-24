@@ -225,7 +225,7 @@ class Endboss extends MovableObject {
      */
     getHurt() {
         this.isHurt = true;
-        this.energy -= 20;
+        this.energy -= 10;
         if (this.energy <= 0) {
             this.die();
         } else {

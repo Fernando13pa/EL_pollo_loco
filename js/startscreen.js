@@ -29,10 +29,12 @@ function startGame() {
     const canvas = document.getElementById('canvas');
     const muteButton = document.getElementById('muteButton');
     const settingsButton = document.getElementById('settingsButton');
+    const fullscreenButton = document.getElementById('fullscreenButton');
     startScreen.classList.add('hidden');
     canvas.style.backgroundImage = 'none';
     muteButton.classList.remove('hidden');
     settingsButton.classList.remove('hidden');
+    fullscreenButton.classList.remove('hidden');
     init();
 }
 
@@ -206,6 +208,16 @@ function unmuteAllSounds(muteButton) {
 }
 
 /**
+ * Setzt die Mute-Button Anzeige zurueck
+ */
+function resetMuteButtonUI() {
+    const muteButton = document.getElementById('muteButton');
+    if (muteButton) {
+        muteButton.style.opacity = '1';
+    }
+}
+
+/**
  * Shows game over screen and stops all sounds/intervals
  */
 function showGameOver() {
@@ -286,6 +298,7 @@ function restartGame() {
     }
     isMuted = false;
     isPaused = false;
+    resetMuteButtonUI();
     startGame();
 }
 
@@ -330,5 +343,41 @@ function stopWorldSounds() {
 function resetStaticPositions() {
     Coin.placedPositions = [];
     Bottle.placedPositions = [];
+}
+
+/**
+ * Toggles fullscreen mode for the game
+ */
+function toggleFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        enterFullscreen(document.documentElement);
+    } else {
+        exitFullscreen();
+    }
+}
+
+/**
+ * Enters fullscreen mode
+ * @param {HTMLElement} element - The element to make fullscreen
+ */
+function enterFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    }
+}
+
+/**
+ * Exits fullscreen mode
+ */
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
 }
 

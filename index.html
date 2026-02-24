@@ -62,6 +62,10 @@
             <img src="img/9_juego_modelos/iniciar/settings.png" alt="Settings">
         </button>
 
+        <button id="fullscreenButton" class="fullscreen-button hidden" onclick="toggleFullscreen()" title="Vollbildmodus">
+            <img src="img/5_Fondo/fullscreen.png" alt="Fullscreen">
+        </button>
+
         <div id="optionsMenu" class="options-menu hidden">
             <div class="options-content">
                 <h2>OPTIONS</h2>
@@ -115,6 +119,16 @@
 
         <div id="gameWonScreen" class="game-won-screen hidden">
             <button class="restart-button" onclick="restartGame()">NEU START</button>
+        </div>
+    </div>
+
+    <div id="rotateOverlay" class="rotate-overlay">
+        <div class="rotate-content">
+            <svg class="rotate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="3" width="20" height="14" rx="2" stroke-width="2"/>
+                <path d="M8 21h8M12 17v4" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>Bitte drehen Sie Ihr Gerät</p>
         </div>
     </div>
 

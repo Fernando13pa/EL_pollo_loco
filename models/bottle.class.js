@@ -52,7 +52,7 @@ class Bottle extends DrawableObject {
      */
     generateRandomX() {
         const minX = 300;
-        const maxX = 2200;
+        const maxX = 3500;
         const minGap = Bottle.defaultMinGap;
         let attempts = 0;
         let bx;
