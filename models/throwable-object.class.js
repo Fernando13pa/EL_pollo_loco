@@ -24,13 +24,16 @@ class ThrowableObject extends MovableObject {
      * Constructor - creates a thrown bottle
      * @param {number} x - Start X position
      * @param {number} y - Start Y position
+     * @param {number} direction - Throw direction (1 right, -1 left)
      */
-    constructor(x, y) {
+    constructor(x, y, direction = 1) {
         super().loadImage('img/6_Botella_salsa/botella_girando/1_bottle_rotation.png');
         this.loadImages(this.IMAGES_ROTATION);
         this.loadImages(this.IMAGES_SPLASH);
         this.x = x;
         this.y = y;
+        this.direction = direction;
+        this.otherDirection = direction < 0;
         this.width = 50;
         this.height = 60;
         this.throw();
@@ -53,7 +56,7 @@ class ThrowableObject extends MovableObject {
     startThrowMovement() {
         this.throwMoveInterval = setInterval(() => {
             if (isPaused) return;
-            this.x += 10;
+            this.x += 10 * this.direction;
         }, 1000 / 25);
         addInterval(this.throwMoveInterval);
     }

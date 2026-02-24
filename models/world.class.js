@@ -101,7 +101,10 @@ class World {
      * Throws a new bottle
      */
     throwBottle() {
-        let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 50);
+        const throwDirection = this.character.otherDirection ? -1 : 1;
+        const bottleOffsetX = throwDirection === 1 ? this.character.width : -20;
+        const bottleX = this.character.x + bottleOffsetX;
+        let bottle = new ThrowableObject(bottleX, this.character.y + 50, throwDirection);
         this.throwableObjects.push(bottle);
         this.bottleInFlight = true;
         this.bottlesCollected--;

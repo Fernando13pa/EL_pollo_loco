@@ -43,7 +43,7 @@
 
     <h1>El Pollo Loco</h1>
 
-    <div style="position: relative; display: inline-block;">
+    <div id="gameContainer" style="position: relative; display: inline-block;">
         <canvas id="canvas" width="720" height="480">
         </canvas>
 
@@ -60,10 +60,6 @@
 
         <button id="settingsButton" class="settings-button hidden" onclick="openSettings()" title="Optionen">
             <img src="img/9_juego_modelos/iniciar/settings.png" alt="Settings">
-        </button>
-
-        <button id="fullscreenButton" class="fullscreen-button hidden" onclick="toggleFullscreen()" title="Vollbildmodus">
-            <img src="img/5_Fondo/fullscreen.png" alt="Fullscreen">
         </button>
 
         <div id="optionsMenu" class="options-menu hidden">
@@ -119,6 +115,25 @@
 
         <div id="gameWonScreen" class="game-won-screen hidden">
             <button class="restart-button" onclick="restartGame()">NEU START</button>
+        </div>
+
+        <div id="mobileControls" class="mobile-controls hidden">
+            <div class="mobile-controls-left">
+                <button id="btnLeft" class="mobile-control-btn" type="button" aria-label="Nach links">
+                    <img src="img/5_Fondo/backw.png" alt="Links">
+                </button>
+                <button id="btnRight" class="mobile-control-btn" type="button" aria-label="Nach rechts">
+                    <img src="img/5_Fondo/forw.png" alt="Rechts">
+                </button>
+            </div>
+            <div class="mobile-controls-right">
+                <button id="btnJump" class="mobile-control-btn" type="button" aria-label="Springen">
+                    <img src="img/5_Fondo/upw.png" alt="Sprung">
+                </button>
+                <button id="btnThrow" class="mobile-control-btn" type="button" aria-label="Werfen">
+                    <img src="img/5_Fondo/throw.png" alt="Wurf">
+                </button>
+            </div>
         </div>
     </div>
 

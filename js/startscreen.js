@@ -29,12 +29,14 @@ function startGame() {
     const canvas = document.getElementById('canvas');
     const muteButton = document.getElementById('muteButton');
     const settingsButton = document.getElementById('settingsButton');
-    const fullscreenButton = document.getElementById('fullscreenButton');
+    const mobileControls = document.getElementById('mobileControls');
     startScreen.classList.add('hidden');
     canvas.style.backgroundImage = 'none';
     muteButton.classList.remove('hidden');
     settingsButton.classList.remove('hidden');
-    fullscreenButton.classList.remove('hidden');
+    if (mobileControls) {
+        mobileControls.classList.remove('hidden');
+    }
     init();
 }
 
@@ -170,6 +172,9 @@ function resumeGame() {
 function toggleMute() {
     isMuted = !isMuted;
     const muteButton = document.getElementById('muteButton');
+    if (muteButton) {
+        muteButton.blur();
+    }
     if (typeof world !== 'undefined' && world) {
         isMuted ? muteAllSounds(muteButton) : unmuteAllSounds(muteButton);
     }
@@ -343,41 +348,5 @@ function stopWorldSounds() {
 function resetStaticPositions() {
     Coin.placedPositions = [];
     Bottle.placedPositions = [];
-}
-
-/**
- * Toggles fullscreen mode for the game
- */
-function toggleFullscreen() {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        enterFullscreen(document.documentElement);
-    } else {
-        exitFullscreen();
-    }
-}
-
-/**
- * Enters fullscreen mode
- * @param {HTMLElement} element - The element to make fullscreen
- */
-function enterFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-    } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-    }
-}
-
-/**
- * Exits fullscreen mode
- */
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    }
 }
 
