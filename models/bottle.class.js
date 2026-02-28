@@ -1,6 +1,7 @@
 class Bottle extends DrawableObject {
     static placedPositions = [];
     static defaultMinGap = 300;
+    collisionOffsets = { left: 14, right: 14, top: 16, bottom: 12 };
     IMAGES_GROUND = [
         'img/6_Botella_salsa/1_salsa_bottle_on_ground.png',
         'img/6_Botella_salsa/2_salsa_bottle_on_ground.png'

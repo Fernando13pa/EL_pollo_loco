@@ -3,6 +3,8 @@ class Character extends MovableObject {
     y = 150;
     speed = 10;
     collisionOffsets = { left: 12, right: 12, top: 120 };
+    jumpInputConsumed = false;
+    jumpCooldownUntil = 0;
 
     IMAGES_STILL = ['img/2_Pepe_figura/1_parado/tranquilo/I-1.png',
         'img/2_Pepe_figura/1_parado/tranquilo/I-2.png',
@@ -101,10 +103,25 @@ class Character extends MovableObject {
             this.moveLeft();
             this.otherDirection = true;
         }
-        if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+
+        if (!this.world.keyboard.SPACE) {
+            this.jumpInputConsumed = false;
+        }
+
+        if (this.world.keyboard.SPACE && !this.jumpInputConsumed && this.canPerformPlayerJump()) {
+            this.jumpInputConsumed = true;
+            this.jumpCooldownUntil = Date.now() + 140;
             this.jump();
             if (!isMuted) this.jumpSound.play().catch(() => {});
         }
+    }
+
+    /**
+     * Checks if a player-triggered jump is currently allowed
+     * @returns {boolean}
+     */
+    canPerformPlayerJump() {
+        return !this.isAboveGround() && Date.now() >= this.jumpCooldownUntil;
     }
 
     /**

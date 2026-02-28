@@ -2,6 +2,7 @@ class SmallChicken extends MovableObject {
     y = 395;
     height = 35;
     width = 35;
+    collisionOffsets = { left: 4, right: 4, top: 3, bottom: 2 };
     energy = 1;
     IMAGES_WALKING = ['img/3_Enemigos/Pollitos/1_caminar/1_w.png',
         'img/3_Enemigos/Pollitos/1_caminar/2_w.png',
@@ -9,6 +10,7 @@ class SmallChicken extends MovableObject {
     IMAGES_DEAD = ['img/3_Enemigos/Pollitos/2_aplastados/dead.png'];
     currentImageIndex = 0;
     isSquashed = false;
+    deadSince = null;
 
     /**
      * Constructor - loads images and sets random position/speed
@@ -59,8 +61,7 @@ class SmallChicken extends MovableObject {
      * Small chicken dies instantly when hit
      */
     hit() {
-        if (this.energy == 0) return;
-        this.energy = 0;
+        this.squash();
     }
 
     /**
@@ -70,5 +71,7 @@ class SmallChicken extends MovableObject {
         if (this.isSquashed) return;
         this.isSquashed = true;
         this.energy = 0;
+        this.deadSince = Date.now();
+        this.img = this.imageCache[this.IMAGES_DEAD[0]];
     }
 }   

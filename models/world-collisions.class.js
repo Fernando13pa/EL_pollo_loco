@@ -32,7 +32,11 @@ Object.assign(World.prototype, {
      */
     handleJumpOnEnemy(enemy) {
         if (enemy.constructor.name !== 'Endboss') {
-            enemy.hit();
+            if (typeof enemy.squash === 'function') {
+                enemy.squash();
+            } else {
+                enemy.hit();
+            }
             if (!isMuted) {
                 let squashSound = new Audio('audio/audio_chicken-squash.mp3');
                 squashSound.play().catch(() => {});
@@ -59,11 +63,16 @@ Object.assign(World.prototype, {
      * Removes all dead enemies from level.
      */
     cleanupDeadEnemies() {
+        const removeDelayMs = 450;
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
-            if (this.level.enemies[i] instanceof Endboss) {
+            const enemy = this.level.enemies[i];
+            if (enemy instanceof Endboss) {
                 continue;
             }
-            if (this.level.enemies[i].energy == 0) {
+            if (enemy.energy == 0) {
+                if (enemy.deadSince && Date.now() - enemy.deadSince < removeDelayMs) {
+                    continue;
+                }
                 this.level.enemies.splice(i, 1);
             }
         }
@@ -90,7 +99,7 @@ Object.assign(World.prototype, {
     handleBottleHit(bottle, enemy) {
         this.playGlassSound();
         if (enemy instanceof Chicken || enemy instanceof SmallChicken) {
-            enemy.energy = 0;
+            enemy.squash();
         } else if (enemy instanceof Endboss) {
             this.damageEndboss(enemy);
         }
@@ -200,12 +209,12 @@ Object.assign(World.prototype, {
      * @returns {boolean} True if character collects the item.
      */
     isCharacterCollectingItem(item) {
-        const characterBodyY = this.character.y + 120;
-        const characterBodyHeight = this.character.height - 120;
-        return this.character.x + this.character.width > item.x &&
-            this.character.x < item.x + item.width &&
-            characterBodyY + characterBodyHeight > item.y &&
-            characterBodyY < item.y + item.height;
+        const characterBounds = this.character.getCollisionBounds();
+        const itemBounds = item.getCollisionBounds();
+        return characterBounds.right > itemBounds.left &&
+            characterBounds.left < itemBounds.right &&
+            characterBounds.bottom > itemBounds.top &&
+            characterBounds.top < itemBounds.bottom;
     },
 
     /**

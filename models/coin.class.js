@@ -1,6 +1,7 @@
 class Coin extends DrawableObject {
     static placedPositions = [];
     static defaultMinGap = 300;
+    collisionOffsets = { left: 34, right: 34, top: 34, bottom: 34 };
     /**
      * Constructor - creates a coin at random or specified coordinates
      * @param {number} x - X position (optional)

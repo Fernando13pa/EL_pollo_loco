@@ -2,6 +2,11 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 let touchControlsInitialized = false;
+let touchControlSafeguardsInitialized = false;
+
+if (isTouchDevice()) {
+    document.documentElement.classList.add('touch-device');
+}
 
 /**
  * Initializes the game - creates canvas, level and world
@@ -49,6 +54,7 @@ function setupTouchControls() {
     const btnThrow = document.getElementById('btnThrow');
 
     if (!btnLeft || !btnRight || !btnJump || !btnThrow) return;
+    setupTouchControlSafeguards([btnLeft, btnRight, btnJump, btnThrow]);
 
     bindHoldControl(btnLeft, 'LEFT');
     bindHoldControl(btnRight, 'RIGHT');
@@ -56,6 +62,45 @@ function setupTouchControls() {
     bindTapControl(btnThrow, 'D');
 
     touchControlsInitialized = true;
+}
+
+/**
+ * Adds safeguards against stuck input and long-press context menus
+ * @param {HTMLElement[]} buttons - all on-screen control buttons
+ */
+function setupTouchControlSafeguards(buttons) {
+    if (touchControlSafeguardsInitialized) return;
+
+    const preventContextMenu = (e) => e.preventDefault();
+    buttons.forEach((button) => {
+        button.addEventListener('contextmenu', preventContextMenu);
+    });
+
+    const resetTouchControlKeys = () => {
+        keyboard.LEFT = false;
+        keyboard.RIGHT = false;
+        keyboard.SPACE = false;
+        keyboard.D = false;
+    };
+
+    window.addEventListener('pointerup', resetTouchControlKeys);
+    window.addEventListener('pointercancel', resetTouchControlKeys);
+    window.addEventListener('blur', resetTouchControlKeys);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            resetTouchControlKeys();
+        }
+    });
+
+    touchControlSafeguardsInitialized = true;
+}
+
+/**
+ * Detects whether the current device supports touch input
+ * @returns {boolean}
+ */
+function isTouchDevice() {
+    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
 }
 
 /**

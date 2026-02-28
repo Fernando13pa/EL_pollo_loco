@@ -2,6 +2,7 @@ class Chicken extends MovableObject {
     y = 360;
     height = 70;
     width = 70;
+    collisionOffsets = { left: 8, right: 8, top: 6, bottom: 4 };
     energy = 1;
     IMAGES_WALKING = ['img/3_Enemigos/Gallinas/1_caminar/1_w.png',
         'img/3_Enemigos/Gallinas/1_caminar/2_w.png',
@@ -9,6 +10,7 @@ class Chicken extends MovableObject {
     IMAGES_DEAD = ['img/3_Enemigos/Gallinas/2_aplastada/dead.png'];
     currentImageIndex = 0;
     isSquashed = false;
+    deadSince = null;
 
     /**
      * Constructor - loads images and sets random position/speed
@@ -59,14 +61,17 @@ class Chicken extends MovableObject {
      * Chicken dies instantly when hit
      */
     hit() {
-        if (this.energy == 0) return;
-        this.energy = 0;
+        this.squash();
     }
 
     /**
      * Marks the chicken as squashed
      */
     squash() {
+        if (this.isSquashed) return;
+        this.isSquashed = true;
         this.energy = 0;
+        this.deadSince = Date.now();
+        this.img = this.imageCache[this.IMAGES_DEAD[0]];
     }
 }

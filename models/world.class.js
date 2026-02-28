@@ -69,6 +69,7 @@
         this.character.world = this;
         this.character.animate();
         this.level.enemies.forEach((enemy) => {
+            enemy.world = this;
             if (enemy.animate) enemy.animate();
         });
     }

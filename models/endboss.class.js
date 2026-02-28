@@ -2,7 +2,8 @@ class Endboss extends MovableObject {
     height = 400;
     width = 250;
     y = 55;
-    speed = 5;
+    collisionOffsets = { left: 42, right: 42, top: 70, bottom: 35 };
+    speed = 8.5;
     isCharacterNear = false;
     isRunning = false;
     isAttacking = false;
@@ -15,6 +16,8 @@ class Endboss extends MovableObject {
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
+    chaseAfterHitDurationMs = 4500;
+    chaseAfterHitUntil = 0;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -118,6 +121,9 @@ class Endboss extends MovableObject {
     playBehaviorAnimation() {
         if (this.isHurt) {
             this.playAnimation(this.IMAGES_HURT);
+        } else if (this.shouldChaseAfterHit()) {
+            this.playAnimation(this.IMAGES_WALKING);
+            this.chaseCharacter();
         } else if (this.isAttacking) {
             this.playAnimation(this.IMAGES_ATTACK);
         } else if (this.isRunning) {
@@ -152,7 +158,7 @@ class Endboss extends MovableObject {
             if (this.isCharacterNear && this.hasStartedAttacking && !this.isHurt && !this.isDead) {
                 this.executeAttackPhases();
             }
-        }, 8000);
+        }, 10000);
         addInterval(this.animateInterval3);
     }
 
@@ -187,7 +193,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 3: Walking phase after 2 seconds (runs for 6 seconds)
+     * Phase 3: Walking phase after 2 seconds (runs for 8 seconds)
      */
     scheduleWalkingPhase() {
         setTimeout(() => {
@@ -210,20 +216,25 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 4: Stop walking after 8 seconds
+     * Phase 4: Stop walking after 10 seconds
      */
     scheduleEndPhase() {
         setTimeout(() => {
             if (!this.isHurt && !this.isDead) {
                 this.isRunning = false;
             }
-        }, 8000);
+        }, 10000);
     }
 
     /**
      * Called when endboss is hit
      */
     getHurt() {
+        if (this.isDead) return;
+        this.isCharacterNear = true;
+        this.hasStartedAttacking = true;
+        this.isAttacking = false;
+        this.isRunning = false;
         this.isHurt = true;
         this.energy -= 10;
         if (this.energy <= 0) {
@@ -231,7 +242,36 @@ class Endboss extends MovableObject {
         } else {
             setTimeout(() => {
                 this.isHurt = false;
+                this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
             }, 1000);
+        }
+    }
+
+    /**
+     * Returns whether the endboss should currently rush the character
+     * @returns {boolean}
+     */
+    shouldChaseAfterHit() {
+        return Date.now() < this.chaseAfterHitUntil;
+    }
+
+    /**
+     * Moves the endboss toward the character's current position
+     */
+    chaseCharacter() {
+        if (!this.world || !this.world.character) {
+            this.moveLeft();
+            return;
+        }
+
+        const characterCenterX = this.world.character.x + this.world.character.width / 2;
+        const endbossCenterX = this.x + this.width / 2;
+        if (characterCenterX < endbossCenterX) {
+            this.otherDirection = false;
+            this.moveLeft();
+        } else {
+            this.otherDirection = true;
+            this.moveRight();
         }
     }
 
@@ -242,6 +282,7 @@ class Endboss extends MovableObject {
         this.isDead = true;
         this.isRunning = false;
         this.isAttacking = false;
+        this.chaseAfterHitUntil = 0;
     }
 
     /**

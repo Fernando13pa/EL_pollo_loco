@@ -39,6 +39,28 @@ canvas {
     position: relative;
 }
 
+.impressum-footer-link {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    color: #1f1f1f;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-decoration: underline;
+    cursor: pointer;
+    z-index: 40;
+    padding: 4px 8px;
+    text-decoration: none;
+}
+
+.impressum-footer-link:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
 .mobile-controls {
     position: absolute;
     left: 0;
@@ -50,6 +72,13 @@ canvas {
     padding: 0 16px;
     z-index: 220;
     pointer-events: none;
+}
+
+.touch-device .mobile-controls {
+    display: flex;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
 }
 
 .mobile-controls.hidden {
@@ -76,6 +105,8 @@ canvas {
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-control-btn img {
@@ -83,6 +114,28 @@ canvas {
     height: 34px;
     object-fit: contain;
     pointer-events: none;
+}
+
+@media (hover: none) and (pointer: coarse) and (min-width: 900px) {
+    .mobile-controls {
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        padding: 0 24px;
+    }
+
+    .mobile-controls-left,
+    .mobile-controls-right {
+        gap: 16px;
+    }
+
+    .mobile-control-btn {
+        width: 72px;
+        height: 72px;
+    }
+
+    .mobile-control-btn img {
+        width: 42px;
+        height: 42px;
+    }
 }
 
 /* Start Screen Styles */
@@ -545,6 +598,10 @@ canvas {
 
 /* Mobile Landscape - Fullscreen Game (all mobile devices in landscape) */
 @media only screen and (max-height: 768px) and (orientation: landscape) {
+    .impressum-footer-link {
+        display: none !important;
+    }
+
     .rotate-overlay {
         display: none !important;
     }
@@ -690,6 +747,10 @@ canvas {
 
 /* Mobile Landscape - Fullscreen Game */
 @media only screen and (max-width: 480px) and (orientation: landscape) {
+    .impressum-footer-link {
+        display: none !important;
+    }
+
     .rotate-overlay {
         display: none !important;
     }
@@ -821,7 +882,11 @@ canvas {
     }
 }
 
-@media (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+@media (hover: none) and (pointer: coarse) {
+    .impressum-footer-link {
+        display: none !important;
+    }
+
     .mobile-controls {
         display: flex;
     }

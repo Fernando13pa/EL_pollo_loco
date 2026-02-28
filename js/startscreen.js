@@ -1,9 +1,34 @@
 // Start screen functionality
-let isMuted = false;
+const MUTE_STORAGE_KEY = 'el_pollo_loco_is_muted';
+let isMuted = loadMutePreference();
 let isPaused = false;
 let intervalIds = [];
 let menuOpen = false;
 let pausedIntervals = [];
+let impressumReturnTarget = 'options';
+
+/**
+ * Loads mute preference from localStorage
+ * @returns {boolean}
+ */
+function loadMutePreference() {
+    try {
+        return localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
+    } catch (_) {
+        return false;
+    }
+}
+
+/**
+ * Persists mute preference in localStorage
+ */
+function saveMutePreference() {
+    try {
+        localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
+    } catch (_) {
+        // Ignore storage access errors (e.g. private mode restrictions)
+    }
+}
 
 /**
  * Adds an interval to the global list for later cleanup
@@ -37,6 +62,7 @@ function startGame() {
     if (mobileControls) {
         mobileControls.classList.remove('hidden');
     }
+    updateMuteButtonUI();
     init();
 }
 
@@ -112,21 +138,43 @@ function closeGameExplanation() {
 /**
  * Shows the impressum menu
  */
-function showImpressum() {
+function showImpressum(returnTarget = 'options') {
     const optionsMenu = document.getElementById('optionsMenu');
     const impressumMenu = document.getElementById('impressumMenu');
+    impressumReturnTarget = returnTarget;
     optionsMenu.classList.add('hidden');
     impressumMenu.classList.remove('hidden');
+}
+
+/**
+ * Opens the impressum menu from the desktop footer link
+ */
+function openImpressumFromFooter() {
+    const optionsMenu = document.getElementById('optionsMenu');
+    const hasWorld = typeof world !== 'undefined' && world;
+    const isOptionsOpen = !optionsMenu.classList.contains('hidden');
+    const returnTarget = isOptionsOpen ? 'options' : (hasWorld ? 'none' : 'start');
+    showImpressum(returnTarget);
 }
 
 /**
  * Closes the impressum menu
  */
 function closeImpressum() {
+    const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
     const impressumMenu = document.getElementById('impressumMenu');
     impressumMenu.classList.add('hidden');
-    optionsMenu.classList.remove('hidden');
+
+    if (impressumReturnTarget === 'options') {
+        optionsMenu.classList.remove('hidden');
+    }
+
+    if (impressumReturnTarget === 'start') {
+        startScreen.classList.remove('hidden');
+    }
+
+    impressumReturnTarget = 'options';
 }
 
 /**
@@ -171,10 +219,12 @@ function resumeGame() {
  */
 function toggleMute() {
     isMuted = !isMuted;
+    saveMutePreference();
     const muteButton = document.getElementById('muteButton');
     if (muteButton) {
         muteButton.blur();
     }
+    updateMuteButtonUI();
     if (typeof world !== 'undefined' && world) {
         isMuted ? muteAllSounds(muteButton) : unmuteAllSounds(muteButton);
     }
@@ -218,8 +268,15 @@ function unmuteAllSounds(muteButton) {
 function resetMuteButtonUI() {
     const muteButton = document.getElementById('muteButton');
     if (muteButton) {
-        muteButton.style.opacity = '1';
+        muteButton.style.opacity = isMuted ? '0.5' : '1';
     }
+}
+
+/**
+ * Keeps mute button UI in sync with current mute state
+ */
+function updateMuteButtonUI() {
+    resetMuteButtonUI();
 }
 
 /**
@@ -301,9 +358,8 @@ function restartGame() {
         stopWorldSounds();
         world = null;
     }
-    isMuted = false;
     isPaused = false;
-    resetMuteButtonUI();
+    updateMuteButtonUI();
     startGame();
 }
 

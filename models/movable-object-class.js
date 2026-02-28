@@ -47,10 +47,12 @@ class MovableObject extends DrawableObject {
      * @returns {boolean} true on collision
      */
     isColliding(movableObject) {
-        return this.x + this.width > movableObject.x &&
-            this.x < movableObject.x + movableObject.width &&
-            this.y + this.height > movableObject.y &&
-            this.y < movableObject.y + movableObject.height;
+        const a = this.getCollisionBounds();
+        const b = movableObject.getCollisionBounds();
+        return a.right > b.left &&
+            a.left < b.right &&
+            a.bottom > b.top &&
+            a.top < b.bottom;
     }
 
     /**
@@ -58,12 +60,7 @@ class MovableObject extends DrawableObject {
      * @returns {object} Bounding box with left, right, top, bottom
      */
     getCollisionBounds() {
-        return {
-            left: this.x,
-            right: this.x + this.width,
-            top: this.y,
-            bottom: this.y + this.height
-        };
+        return super.getCollisionBounds();
     }
 
     /**
@@ -75,10 +72,12 @@ class MovableObject extends DrawableObject {
         if (!this.isColliding(enemy)) return false;
         if (!this.isAboveGround()) return false;
         if (this.speedY >= 0) return false;
-        const characterBottom = this.y + this.height;
-        const enemyTop = enemy.y;
-        const tolerance = enemy.height < 50 ? 20 : 35;
-        return characterBottom >= enemyTop - 50 && characterBottom <= enemyTop + tolerance;
+        const characterBounds = this.getCollisionBounds();
+        const enemyBounds = enemy.getCollisionBounds();
+        const enemyHeight = enemyBounds.bottom - enemyBounds.top;
+        const tolerance = enemyHeight < 50 ? 20 : 35;
+        return characterBounds.bottom >= enemyBounds.top - 20 &&
+            characterBounds.bottom <= enemyBounds.top + tolerance;
     }
 
     /**
@@ -88,10 +87,11 @@ class MovableObject extends DrawableObject {
      */
     isCollidingFromSide(enemy) {
         if (!this.isColliding(enemy)) return false;
-        const characterBottom = this.y + this.height;
-        const enemyTop = enemy.y;
-        const tolerance = enemy.height < 50 ? 20 : 35;
-        return characterBottom > enemyTop + tolerance;
+        const characterBounds = this.getCollisionBounds();
+        const enemyBounds = enemy.getCollisionBounds();
+        const enemyHeight = enemyBounds.bottom - enemyBounds.top;
+        const tolerance = enemyHeight < 50 ? 20 : 35;
+        return characterBounds.bottom > enemyBounds.top + tolerance;
     }
 
     /**
