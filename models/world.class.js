@@ -152,7 +152,7 @@
 
 
     /**
-     * Hauptzeichenfunktion - wird kontinuierlich aufgerufen
+     * Main draw function - called continuously
      */
     draw() {
         if (!this.isActive) return;
@@ -167,7 +167,7 @@
     }
 
     /**
-     * Fordert den nÃ¤chsten Frame an
+     * Requests the next frame
      */
     requestNextFrame() {
         if (!this.isActive) return;
@@ -178,7 +178,7 @@
     }
 
     /**
-     * Zeichnet alle Spielobjekte
+     * Draws all game objects
      */
     drawGameObjects() {
         this.ctx.translate(this.camera_x, 0);
@@ -190,7 +190,7 @@
     }
 
     /**
-     * Zeichnet alle Status-Bars (fixiert auf Bildschirm)
+     * Draws all status bars (fixed on screen)
      */
     drawStatusBars() {
         this.ctx.translate(-this.camera_x, 0);
@@ -202,7 +202,7 @@
     }
 
     /**
-     * Zeichnet alle Level-Objekte (Character, Gegner, Items)
+     * Draws all level objects (character, enemies, items)
      */
     drawLevelObjects() {
         if (this.level.coins) this.addObjectsToMap(this.level.coins);
@@ -213,7 +213,7 @@
     }
 
     /**
-     * PrÃ¼ft ob das Spiel vorbei ist (Character tot oder Endboss besiegt)
+     * Checks whether the game is over (character dead or endboss defeated)
      */
     checkGameEndConditions() {
         if (this.character.energy <= 0) {
@@ -225,7 +225,7 @@
     }
 
     /**
-     * Behandelt Game Over Zustand
+     * Handles the game-over state
      */
     handleGameOver() {
         this.isGameOver = true;
@@ -234,7 +234,7 @@
     }
 
     /**
-     * Behandelt Gewinn-Zustand
+     * Handles the win state
      */
     handleGameWon() {
         this.gameWonShown = true;
@@ -248,8 +248,8 @@
         }, deathAnimationDuration);
     }
     /**
-     * FÃ¼gt ein Array von Objekten zur Map hinzu
-     * @param {Array} objects - Array von zeichenbaren Objekten
+     * Adds an array of objects to the map
+     * @param {Array} objects - Array of drawable objects
      */
     addObjectsToMap(objects) {
         objects.forEach((o) => {
@@ -258,8 +258,8 @@
     }
 
     /**
-     * FÃ¼gt ein einzelnes Objekt zur Map hinzu (mit Spiegelung wenn nÃ¶tig)
-     * @param {MovableObject} movableObject - Das zu zeichnende Objekt
+     * Adds a single object to the map (with mirroring if needed)
+     * @param {MovableObject} movableObject - The object to draw
      */
     addtoMap(movableObject) {
         if (movableObject.otherDirection) {
@@ -273,8 +273,8 @@
     }
 
     /**
-     * Spiegelt das Bild eines Objekts horizontal
-     * @param {MovableObject} movableObject - Das zu spiegelnde Objekt
+     * Mirrors an object's image horizontally
+     * @param {MovableObject} movableObject - The object to mirror
      */
     flipImage(movableObject) {
         this.ctx.save();
@@ -284,8 +284,8 @@
     }
 
     /**
-     * Setzt die Spiegelung eines Objekts zurÃ¼ck
-     * @param {MovableObject} movableObject - Das Objekt
+     * Resets an object's mirroring
+     * @param {MovableObject} movableObject - The object
      */
     flipImageBack(movableObject) {
         movableObject.x = -movableObject.x * 1;

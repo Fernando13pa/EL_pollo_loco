@@ -13,12 +13,24 @@ class MovableObject extends DrawableObject {
     applyGravity() {
         this.gravityInterval = setInterval(() => {
             if (isPaused) return;
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-            }
+            this.applyGravityStep();
         }, 1000 / 25);
         addInterval(this.gravityInterval);
+    }
+
+    applyGravityStep() {
+        if (!this.isAboveGround() && this.speedY <= 0) return;
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+        this.clampToGround();
+    }
+
+    clampToGround() {
+        if (this instanceof ThrowableObject) return;
+        const groundLevelY = this.getGroundLevelY();
+        if (this.y <= groundLevelY) return;
+        this.y = groundLevelY;
+        this.speedY = 0;
     }
 
     /**
@@ -37,8 +49,16 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) {
             return true;
         } else {
-            return this.y < 150;
+            return this.y < this.getGroundLevelY();
         }
+    }
+
+    /**
+     * Returns the Y position representing ground level for this object.
+     * @returns {number}
+     */
+    getGroundLevelY() {
+        return 150;
     }
 
     /**

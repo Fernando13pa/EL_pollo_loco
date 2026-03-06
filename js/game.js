@@ -47,21 +47,31 @@ window.addEventListener("keyup", (e) => {
  */
 function setupTouchControls() {
     if (touchControlsInitialized) return;
+    const buttons = getTouchButtons();
+    if (!hasAllTouchButtons(buttons)) return;
+    setupTouchControlSafeguards(buttons);
+    bindPrimaryTouchControls(buttons);
+    touchControlsInitialized = true;
+}
 
-    const btnLeft = document.getElementById('btnLeft');
-    const btnRight = document.getElementById('btnRight');
-    const btnJump = document.getElementById('btnJump');
-    const btnThrow = document.getElementById('btnThrow');
+function getTouchButtons() {
+    return [
+        document.getElementById('btnLeft'),
+        document.getElementById('btnRight'),
+        document.getElementById('btnJump'),
+        document.getElementById('btnThrow')
+    ];
+}
 
-    if (!btnLeft || !btnRight || !btnJump || !btnThrow) return;
-    setupTouchControlSafeguards([btnLeft, btnRight, btnJump, btnThrow]);
+function hasAllTouchButtons(buttons) {
+    return buttons.every(Boolean);
+}
 
+function bindPrimaryTouchControls([btnLeft, btnRight, btnJump, btnThrow]) {
     bindHoldControl(btnLeft, 'LEFT');
     bindHoldControl(btnRight, 'RIGHT');
     bindTapControl(btnJump, 'SPACE');
     bindTapControl(btnThrow, 'D');
-
-    touchControlsInitialized = true;
 }
 
 /**
@@ -70,29 +80,33 @@ function setupTouchControls() {
  */
 function setupTouchControlSafeguards(buttons) {
     if (touchControlSafeguardsInitialized) return;
+    const resetTouchControlKeys = createTouchKeyResetHandler();
+    addContextMenuGuards(buttons);
+    addTouchResetHandlers(resetTouchControlKeys);
+    touchControlSafeguardsInitialized = true;
+}
 
+function addContextMenuGuards(buttons) {
     const preventContextMenu = (e) => e.preventDefault();
-    buttons.forEach((button) => {
-        button.addEventListener('contextmenu', preventContextMenu);
-    });
+    buttons.forEach((button) => button.addEventListener('contextmenu', preventContextMenu));
+}
 
-    const resetTouchControlKeys = () => {
+function createTouchKeyResetHandler() {
+    return () => {
         keyboard.LEFT = false;
         keyboard.RIGHT = false;
         keyboard.SPACE = false;
         keyboard.D = false;
     };
+}
 
+function addTouchResetHandlers(resetTouchControlKeys) {
     window.addEventListener('pointerup', resetTouchControlKeys);
     window.addEventListener('pointercancel', resetTouchControlKeys);
     window.addEventListener('blur', resetTouchControlKeys);
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            resetTouchControlKeys();
-        }
+        if (document.hidden) resetTouchControlKeys();
     });
-
-    touchControlSafeguardsInitialized = true;
 }
 
 /**
@@ -109,19 +123,19 @@ function isTouchDevice() {
  * @param {string} keyName - keyboard flag name
  */
 function bindHoldControl(button, keyName) {
-    const press = (e) => {
-        e.preventDefault();
-        keyboard[keyName] = true;
-    };
-    const release = (e) => {
-        e.preventDefault();
-        keyboard[keyName] = false;
-    };
-
+    const press = createKeyHandler(keyName, true);
+    const release = createKeyHandler(keyName, false);
     button.addEventListener('pointerdown', press);
     button.addEventListener('pointerup', release);
     button.addEventListener('pointercancel', release);
     button.addEventListener('pointerleave', release);
+}
+
+function createKeyHandler(keyName, value) {
+    return (e) => {
+        e.preventDefault();
+        keyboard[keyName] = value;
+    };
 }
 
 /**
@@ -131,22 +145,19 @@ function bindHoldControl(button, keyName) {
  */
 function bindTapControl(button, keyName) {
     let releaseTimer = null;
-
-    button.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        keyboard[keyName] = true;
-        clearTimeout(releaseTimer);
-        releaseTimer = setTimeout(() => {
-            keyboard[keyName] = false;
-        }, 120);
-    });
-
-    const release = (e) => {
-        e.preventDefault();
-        keyboard[keyName] = false;
-    };
-
+    const release = createKeyHandler(keyName, false);
+    const press = (e) => releaseTimer = handleTapPress(e, keyName, releaseTimer);
     button.addEventListener('pointerup', release);
     button.addEventListener('pointercancel', release);
     button.addEventListener('pointerleave', release);
+    button.addEventListener('pointerdown', press);
+}
+
+function handleTapPress(e, keyName, previousTimer) {
+    e.preventDefault();
+    keyboard[keyName] = true;
+    clearTimeout(previousTimer);
+    return setTimeout(() => {
+        keyboard[keyName] = false;
+    }, 120);
 }

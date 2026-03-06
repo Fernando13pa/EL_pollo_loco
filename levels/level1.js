@@ -37,39 +37,17 @@ function createClouds() {
  * @returns {Array} Array with background objects
  */
 function createBackgrounds() {
+    const offsets = [-720, 0, 720, 720 * 2, 720 * 3, 720 * 4, 720 * 5, 720 * 6];
+    return offsets.flatMap((offset) => createBackgroundSegment(offset));
+}
+
+function createBackgroundSegment(offset) {
+    const variant = Math.abs(Math.round(offset / 720) % 2) === 1 ? 2 : 1;
     return [
-        new BackgroundObject('img/5_Fondo/fondos/air.png', -720),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/2.png', -720),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/2.png', -720),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/2.png', -720),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 0),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/1.png', 0),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/1.png', 0),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/1.png', 0,),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/2.png', 720),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/2.png', 720),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/2.png', 720),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720 * 2),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/1.png', 720 * 2),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/1.png', 720 * 2),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/1.png', 720 * 2),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720 * 3),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/2.png', 720 * 3),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/2.png', 720 * 3),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/2.png', 720 * 3),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720 * 4),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/1.png', 720 * 4),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/1.png', 720 * 4),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/1.png', 720 * 4),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720 * 5),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/2.png', 720 * 5),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/2.png', 720 * 5),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/2.png', 720 * 5),
-        new BackgroundObject('img/5_Fondo/fondos/air.png', 720 * 6),
-        new BackgroundObject('img/5_Fondo/fondos/3_tercer_fondo/1.png', 720 * 6),
-        new BackgroundObject('img/5_Fondo/fondos/2_segundo_fondo/1.png', 720 * 6),
-        new BackgroundObject('img/5_Fondo/fondos/1_primer_fondo/1.png', 720 * 6),
+        new BackgroundObject('img/5_Fondo/fondos/air.png', offset),
+        new BackgroundObject(`img/5_Fondo/fondos/3_tercer_fondo/${variant}.png`, offset),
+        new BackgroundObject(`img/5_Fondo/fondos/2_segundo_fondo/${variant}.png`, offset),
+        new BackgroundObject(`img/5_Fondo/fondos/1_primer_fondo/${variant}.png`, offset)
     ];
 }
 
@@ -86,17 +64,15 @@ function createCoins() {
 
 /**
  * Creates all bottles for level 1 (in air and on ground)
- * @returns {Array} Array with 18 bottles
+ * @returns {Array} Array with 13 bottles
  */
 function createBottles() {
     return [
-        new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(),
-        new Bottle(), new Bottle(), new Bottle(), new Bottle(),
+        new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(), new Bottle(),
+        new Bottle(),
         new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true),
         new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true),
-        new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true),
-        new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true),
-        new Bottle(undefined, undefined, true)
+        new Bottle(undefined, undefined, true), new Bottle(undefined, undefined, true)
     ];
 }
 

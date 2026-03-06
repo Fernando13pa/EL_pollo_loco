@@ -598,7 +598,7 @@ canvas {
 
 /* Mobile Landscape - Fullscreen Game (all mobile devices in landscape) */
 @media only screen and (max-height: 768px) and (orientation: landscape) {
-    .impressum-footer-link {
+    .touch-device .impressum-footer-link {
         display: none !important;
     }
 
@@ -689,7 +689,8 @@ canvas {
     .impressum-content {
         padding: 20px 25px;
         max-width: 85%;
-        overflow: hidden;
+        max-height: 85vh;
+        overflow-y: auto;
     }
 
     .options-content h2,
@@ -747,7 +748,7 @@ canvas {
 
 /* Mobile Landscape - Fullscreen Game */
 @media only screen and (max-width: 480px) and (orientation: landscape) {
-    .impressum-footer-link {
+    .touch-device .impressum-footer-link {
         display: none !important;
     }
 
@@ -834,7 +835,8 @@ canvas {
     .impressum-content {
         padding: 15px 20px;
         max-width: 90%;
-        overflow: hidden;
+        max-height: 85vh;
+        overflow-y: auto;
     }
 
     .options-content h2,
@@ -883,7 +885,7 @@ canvas {
 }
 
 @media (hover: none) and (pointer: coarse) {
-    .impressum-footer-link {
+    .touch-device .impressum-footer-link {
         display: none !important;
     }
 

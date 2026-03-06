@@ -50,20 +50,22 @@ function resetIntervals() {
  * Starts the game - hides start screen and initializes World
  */
 function startGame() {
-    const startScreen = document.getElementById('startScreen');
-    const canvas = document.getElementById('canvas');
-    const muteButton = document.getElementById('muteButton');
-    const settingsButton = document.getElementById('settingsButton');
-    const mobileControls = document.getElementById('mobileControls');
-    startScreen.classList.add('hidden');
-    canvas.style.backgroundImage = 'none';
-    muteButton.classList.remove('hidden');
-    settingsButton.classList.remove('hidden');
-    if (mobileControls) {
-        mobileControls.classList.remove('hidden');
-    }
+    hideStartScreenAndBackground();
+    showGameplayButtons();
     updateMuteButtonUI();
     init();
+}
+
+function hideStartScreenAndBackground() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('canvas').style.backgroundImage = 'none';
+}
+
+function showGameplayButtons() {
+    document.getElementById('muteButton').classList.remove('hidden');
+    document.getElementById('settingsButton').classList.remove('hidden');
+    const mobileControls = document.getElementById('mobileControls');
+    if (mobileControls) mobileControls.classList.remove('hidden');
 }
 
 /**
@@ -83,15 +85,13 @@ function closeOptions() {
     const canvas = document.getElementById('canvas');
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
+    optionsMenu.classList.add('hidden');
+    menuOpen = false;
     if (typeof world !== 'undefined' && world) {
         canvas.style.filter = 'none';
-        optionsMenu.classList.add('hidden');
-        menuOpen = false;
         resumeGame();
     } else {
-        optionsMenu.classList.add('hidden');
         startScreen.classList.remove('hidden');
-        menuOpen = false;
     }
 }
 
@@ -161,20 +161,18 @@ function openImpressumFromFooter() {
  * Closes the impressum menu
  */
 function closeImpressum() {
-    const startScreen = document.getElementById('startScreen');
-    const optionsMenu = document.getElementById('optionsMenu');
-    const impressumMenu = document.getElementById('impressumMenu');
-    impressumMenu.classList.add('hidden');
-
-    if (impressumReturnTarget === 'options') {
-        optionsMenu.classList.remove('hidden');
-    }
-
-    if (impressumReturnTarget === 'start') {
-        startScreen.classList.remove('hidden');
-    }
-
+    document.getElementById('impressumMenu').classList.add('hidden');
+    restoreImpressumReturnTarget();
     impressumReturnTarget = 'options';
+}
+
+function restoreImpressumReturnTarget() {
+    if (impressumReturnTarget === 'options') {
+        document.getElementById('optionsMenu').classList.remove('hidden');
+    }
+    if (impressumReturnTarget === 'start') {
+        document.getElementById('startScreen').classList.remove('hidden');
+    }
 }
 
 /**
@@ -263,7 +261,7 @@ function unmuteAllSounds(muteButton) {
 }
 
 /**
- * Setzt die Mute-Button Anzeige zurueck
+ * Resets the mute button display
  */
 function resetMuteButtonUI() {
     const muteButton = document.getElementById('muteButton');
@@ -316,12 +314,7 @@ function resetEndbossState() {
  * Shows game won screen and plays victory sound
  */
 function showGameWon() {
-    const gameWonScreen = document.getElementById('gameWonScreen');
-    const muteButton = document.getElementById('muteButton');
-    const settingsButton = document.getElementById('settingsButton');
-    gameWonScreen.classList.remove('hidden');
-    muteButton.classList.add('hidden');
-    settingsButton.classList.add('hidden');
+    showEndScreen('gameWonScreen');
     if (typeof world !== 'undefined' && world) {
         resetIntervals();
         stopAllSounds();
@@ -330,6 +323,12 @@ function showGameWon() {
         let winSound = new Audio('audio/audio_win (1).mp3');
         winSound.play().catch(() => {});
     }
+}
+
+function showEndScreen(screenId) {
+    document.getElementById(screenId).classList.remove('hidden');
+    document.getElementById('muteButton').classList.add('hidden');
+    document.getElementById('settingsButton').classList.add('hidden');
 }
 
 /**
@@ -382,20 +381,18 @@ function hideAllScreens() {
  * Stops all world sounds before restart
  */
 function stopWorldSounds() {
-    if (world.backgroundSound) {
-        world.backgroundSound.pause();
-        world.backgroundSound.currentTime = 0;
-    }
-    if (world.endbossSound) {
-        world.endbossSound.pause();
-        world.endbossSound.currentTime = 0;
-    }
+    resetAudio(world.backgroundSound);
+    resetAudio(world.endbossSound);
     if (world.character) {
-        world.character.runningSound.pause();
-        world.character.runningSound.currentTime = 0;
-        world.character.jumpSound.pause();
-        world.character.jumpSound.currentTime = 0;
+        resetAudio(world.character.runningSound);
+        resetAudio(world.character.jumpSound);
     }
+}
+
+function resetAudio(audio) {
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
 }
 
 /**

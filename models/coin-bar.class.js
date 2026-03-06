@@ -40,18 +40,8 @@ class CoinBar extends DrawableObject {
      * @returns {number} Index of the image to display
      */
     resolveImageIndex() {
-        if (this.percent == 100) {
-            return 5;
-        } else if (this.percent >= 80) {
-            return 4;
-        } else if (this.percent >= 60) {
-            return 3;
-        } else if (this.percent >= 40) {
-            return 2;
-        } else if (this.percent >= 20) {
-            return 1;
-        } else {
-            return 0;
-        }
+        const bounded = Math.max(0, Math.min(100, this.percent));
+        return bounded === 0 ? 0 : Math.ceil(bounded / 20);
     }
 }
+

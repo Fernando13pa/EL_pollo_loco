@@ -31,18 +31,21 @@ Object.assign(World.prototype, {
      * @param {MovableObject} enemy - The enemy being jumped on.
      */
     handleJumpOnEnemy(enemy) {
-        if (enemy.constructor.name !== 'Endboss') {
-            if (typeof enemy.squash === 'function') {
-                enemy.squash();
-            } else {
-                enemy.hit();
-            }
-            if (!isMuted) {
-                let squashSound = new Audio('audio/audio_chicken-squash.mp3');
-                squashSound.play().catch(() => {});
-            }
-        }
+        if (enemy.constructor.name !== 'Endboss') this.defeatEnemyFromTop(enemy);
+        this.character.resetJumpAnimation();
         this.character.jump();
+    },
+
+    defeatEnemyFromTop(enemy) {
+        if (typeof enemy.squash === 'function') enemy.squash();
+        else enemy.hit();
+        this.playSquashSound();
+    },
+
+    playSquashSound() {
+        if (isMuted) return;
+        let squashSound = new Audio('audio/audio_chicken-squash.mp3');
+        squashSound.play().catch(() => {});
     },
 
     /**
@@ -66,16 +69,15 @@ Object.assign(World.prototype, {
         const removeDelayMs = 450;
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
             const enemy = this.level.enemies[i];
-            if (enemy instanceof Endboss) {
-                continue;
-            }
-            if (enemy.energy == 0) {
-                if (enemy.deadSince && Date.now() - enemy.deadSince < removeDelayMs) {
-                    continue;
-                }
-                this.level.enemies.splice(i, 1);
-            }
+            if (!this.shouldRemoveEnemy(enemy, removeDelayMs)) continue;
+            this.level.enemies.splice(i, 1);
         }
+    },
+
+    shouldRemoveEnemy(enemy, removeDelayMs) {
+        if (enemy instanceof Endboss || enemy.energy != 0) return false;
+        if (enemy.deadSince && Date.now() - enemy.deadSince < removeDelayMs) return false;
+        return true;
     },
 
     /**

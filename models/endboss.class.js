@@ -3,7 +3,9 @@ class Endboss extends MovableObject {
     width = 250;
     y = 55;
     collisionOffsets = { left: 42, right: 42, top: 70, bottom: 35 };
-    speed = 8.5;
+    baseSpeed = 14;
+    runningAttackSpeed = 22;
+    speed = 14;
     isCharacterNear = false;
     isRunning = false;
     isAttacking = false;
@@ -16,8 +18,12 @@ class Endboss extends MovableObject {
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
-    chaseAfterHitDurationMs = 4500;
+    chaseAfterHitDurationMs = 12000;
     chaseAfterHitUntil = 0;
+    attackCycleIntervalMs = 1200;
+    attackPhaseDelayMs = 0;
+    walkingPhaseDelayMs = 120;
+    endPhaseDelayMs = 1200;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -119,19 +125,27 @@ class Endboss extends MovableObject {
      * Plays the animation based on current behavior
      */
     playBehaviorAnimation() {
-        if (this.isHurt) {
-            this.playAnimation(this.IMAGES_HURT);
-        } else if (this.shouldChaseAfterHit()) {
-            this.playAnimation(this.IMAGES_WALKING);
-            this.chaseCharacter();
-        } else if (this.isAttacking) {
-            this.playAnimation(this.IMAGES_ATTACK);
-        } else if (this.isRunning) {
-            this.playAnimation(this.IMAGES_WALKING);
-            this.moveLeft();
-        } else {
-            this.playAnimation(this.IMAGES_ALERT);
-        }
+        this.speed = this.baseSpeed;
+        if (this.isHurt) return this.playHurtBehavior();
+        if (this.shouldChaseAfterHit()) return this.playChaseBehavior();
+        if (this.isAttacking) return this.playAnimation(this.IMAGES_ATTACK);
+        if (this.isRunning) return this.playRunningBehavior();
+        this.playAnimation(this.IMAGES_ALERT);
+    }
+
+    playHurtBehavior() {
+        this.playAnimation(this.IMAGES_HURT);
+    }
+
+    playChaseBehavior() {
+        this.playAnimation(this.IMAGES_WALKING);
+        this.chaseCharacter();
+    }
+
+    playRunningBehavior() {
+        this.speed = this.runningAttackSpeed;
+        this.playAnimation(this.IMAGES_WALKING);
+        this.moveLeft();
     }
 
     /**
@@ -141,16 +155,15 @@ class Endboss extends MovableObject {
         this.animateInterval2 = setInterval(() => {
             if (isPaused) return;
             if (this.isCharacterNear && !this.hasStartedAttacking && !this.isHurt && !this.isDead) {
-                setTimeout(() => {
-                    this.hasStartedAttacking = true;
-                }, 1000);
+                this.hasStartedAttacking = true;
+                this.executeAttackPhases();
             }
-        }, 100);
+        }, 50);
         addInterval(this.animateInterval2);
     }
 
     /**
-     * Executes the attack cycle (Alert → Attack → Walking)
+     * Executes the attack cycle (Alert -> Attack -> Walking)
      */
     runAttackCycle() {
         this.animateInterval3 = setInterval(() => {
@@ -158,7 +171,7 @@ class Endboss extends MovableObject {
             if (this.isCharacterNear && this.hasStartedAttacking && !this.isHurt && !this.isDead) {
                 this.executeAttackPhases();
             }
-        }, 10000);
+        }, this.attackCycleIntervalMs);
         addInterval(this.animateInterval3);
     }
 
@@ -173,7 +186,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 1: Alert animation (1 second)
+     * Phase 1: Alert animation
      */
     startAlertPhase() {
         this.isAttacking = false;
@@ -181,7 +194,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 2: Attack after 1 second
+     * Phase 2: Attack shortly after alert
      */
     scheduleAttackPhase() {
         setTimeout(() => {
@@ -189,11 +202,11 @@ class Endboss extends MovableObject {
                 this.isAttacking = true;
                 this.isRunning = false;
             }
-        }, 1000);
+        }, this.attackPhaseDelayMs);
     }
 
     /**
-     * Phase 3: Walking phase after 2 seconds (runs for 8 seconds)
+     * Phase 3: Walking phase shortly after attack
      */
     scheduleWalkingPhase() {
         setTimeout(() => {
@@ -202,7 +215,7 @@ class Endboss extends MovableObject {
                 this.isRunning = true;
                 this.playWalkingSound();
             }
-        }, 2000);
+        }, this.walkingPhaseDelayMs);
     }
 
     /**
@@ -216,14 +229,14 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 4: Stop walking after 10 seconds
+     * Phase 4: Stop walking at the end of the cycle
      */
     scheduleEndPhase() {
         setTimeout(() => {
             if (!this.isHurt && !this.isDead) {
-                this.isRunning = false;
+                this.isRunning = this.isCharacterNear;
             }
-        }, 10000);
+        }, this.endPhaseDelayMs);
     }
 
     /**
@@ -231,20 +244,25 @@ class Endboss extends MovableObject {
      */
     getHurt() {
         if (this.isDead) return;
+        this.prepareForHitReaction();
+        if (this.energy <= 0) return this.die();
+        this.scheduleHurtRecovery();
+    }
+
+    prepareForHitReaction() {
         this.isCharacterNear = true;
         this.hasStartedAttacking = true;
         this.isAttacking = false;
         this.isRunning = false;
         this.isHurt = true;
         this.energy -= 10;
-        if (this.energy <= 0) {
-            this.die();
-        } else {
-            setTimeout(() => {
-                this.isHurt = false;
-                this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
-            }, 1000);
-        }
+    }
+
+    scheduleHurtRecovery() {
+        setTimeout(() => {
+            this.isHurt = false;
+            this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
+        }, 1000);
     }
 
     /**
@@ -259,20 +277,29 @@ class Endboss extends MovableObject {
      * Moves the endboss toward the character's current position
      */
     chaseCharacter() {
-        if (!this.world || !this.world.character) {
-            this.moveLeft();
-            return;
-        }
+        if (!this.hasCharacterTarget()) return this.moveLeft();
+        if (this.isCharacterLeftOfEndboss()) return this.moveTowardLeft();
+        this.moveTowardRight();
+    }
 
+    hasCharacterTarget() {
+        return this.world && this.world.character;
+    }
+
+    isCharacterLeftOfEndboss() {
         const characterCenterX = this.world.character.x + this.world.character.width / 2;
         const endbossCenterX = this.x + this.width / 2;
-        if (characterCenterX < endbossCenterX) {
-            this.otherDirection = false;
-            this.moveLeft();
-        } else {
-            this.otherDirection = true;
-            this.moveRight();
-        }
+        return characterCenterX < endbossCenterX;
+    }
+
+    moveTowardLeft() {
+        this.otherDirection = false;
+        this.moveLeft();
+    }
+
+    moveTowardRight() {
+        this.otherDirection = true;
+        this.moveRight();
     }
 
     /**
@@ -286,7 +313,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Gibt die gesamte Dauer der Todesanimation in ms zurück
+     * Returns the total death animation duration in ms
      */
     getDeathAnimationDurationMs() {
         return this.deathAnimationIntervalMs * this.IMAGES_DEAD.length * this.deadAnimationMaxLoops;
