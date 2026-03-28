@@ -7,9 +7,7 @@ class MovableObject extends DrawableObject {
     lasHit = 0;
     gravityInterval;
 
-/**
-     * Launches the gravity loop that updates vertical movement while the object is airborne.
-     */
+    /** Launches the gravity loop that updates vertical movement while the object is airborne. */
     applyGravity() {
         this.gravityInterval = setInterval(() => {
             if (isPaused) return;
@@ -18,9 +16,7 @@ class MovableObject extends DrawableObject {
         addInterval(this.gravityInterval);
     }
 
-    /**
-     * Applies one gravity step and clamps non-throwable objects back to the ground.
-     */
+    /** Applies one gravity step and clamps non-throwable objects back to the ground. */
     applyGravityStep() {
         if (!this.isAboveGround() && this.speedY <= 0) return;
         this.y -= this.speedY;
@@ -28,9 +24,7 @@ class MovableObject extends DrawableObject {
         this.clampToGround();
     }
 
-    /**
-     * Prevents non-throwable objects from sinking below their ground level.
-     */
+    /** Prevents non-throwable objects from sinking below their ground level. */
     clampToGround() {
         if (this instanceof ThrowableObject) return;
         const groundLevelY = this.getGroundLevelY();
@@ -120,9 +114,7 @@ class MovableObject extends DrawableObject {
         return characterBounds.bottom > enemyBounds.top + tolerance;
     }
 
-    /**
-     * Reduces the object's energy and stores the hit time for hurt-state checks.
-     */
+    /** Reduces the object's energy and stores the hit time for hurt-state checks. */
     hit() {
         this.energy -= 5;
         if (this.energy < 0) {
@@ -169,16 +161,12 @@ class MovableObject extends DrawableObject {
         this.currentImageIndex++;
     }
 
-    /**
-     * Moves the object to the right by its current speed.
-     */
+    /** Moves the object to the right by its current speed. */
     moveRight() {
         this.x += this.speed;
     }
 
-    /**
-     * Moves the object to the left and wraps it back when it leaves the screen.
-     */
+    /** Moves the object to the left and wraps it back when it leaves the screen. */
     moveLeft() {
         this.x -= this.speed;
         if (this.x < -this.width) {
@@ -186,9 +174,7 @@ class MovableObject extends DrawableObject {
         }
     }
 
-/**
-     * Applies an upward jump impulse by assigning a positive vertical speed.
-     */
+    /** Applies an upward jump impulse by assigning a positive vertical speed. */
     jump() {
         this.speedY = 16;
     }

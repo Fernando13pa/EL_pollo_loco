@@ -1,6 +1,4 @@
-/**
- * Displays the player's available bottles with one image for each 20% step.
- */
+/** Displays the player's available bottles with one image for each 20% step. */
 class BottleBar extends DrawableObject {
     IMAGES = [
         'img/7_Barras/1_barra_de_estados/3_barra_de_botella/azul/0.png',
@@ -12,9 +10,7 @@ class BottleBar extends DrawableObject {
     ];
     percent = 100;
 
-    /**
-     * Preloads the bottle bar images, positions the bar, and starts it at 0%.
-     */
+    /** Preloads the bottle bar images, positions the bar, and starts it at 0%. */
     constructor() {
         super().loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);

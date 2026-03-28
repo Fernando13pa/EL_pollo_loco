@@ -1,6 +1,4 @@
-/**
- * Displays the endboss health with one image for each 20% step.
- */
+/** Displays the endboss health with one image for each 20% step. */
 class EndbossBar extends DrawableObject {
     IMAGES = [
         'img/7_Barras/2_barra_de_estado_jefe/azul/blue0.png',
@@ -12,9 +10,7 @@ class EndbossBar extends DrawableObject {
     ];
     percent = 100;
 
-    /**
-     * Preloads the endboss bar images, positions the bar, and starts it at full health.
-     */
+    /** Preloads the endboss bar images, positions the bar, and starts it at full health. */
     constructor() {
         super().loadImage(this.IMAGES[5]);
         this.loadImages(this.IMAGES);

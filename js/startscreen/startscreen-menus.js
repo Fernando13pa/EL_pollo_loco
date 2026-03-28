@@ -1,6 +1,4 @@
-/**
- * Hides the start screen, shows the gameplay UI, and starts a fresh game world.
- */
+/** Hides the start screen, shows the gameplay UI, and starts a fresh game world. */
 function startGame() {
     hideStartScreenAndBackground();
     showGameplayButtons();
@@ -8,17 +6,13 @@ function startGame() {
     init();
 }
 
-/**
- * Hides the start screen and removes the canvas background image.
- */
+/** Hides the start screen and removes the canvas background image. */
 function hideStartScreenAndBackground() {
     document.getElementById('startScreen').classList.add('hidden');
     document.getElementById('canvas').style.backgroundImage = 'none';
 }
 
-/**
- * Reveals the gameplay buttons that are needed after the round starts.
- */
+/** Reveals the gameplay buttons that are needed after the round starts. */
 function showGameplayButtons() {
     document.getElementById('muteButton').classList.remove('hidden');
     document.getElementById('settingsButton').classList.remove('hidden');
@@ -26,9 +20,7 @@ function showGameplayButtons() {
     if (mobileControls) mobileControls.classList.remove('hidden');
 }
 
-/**
- * Switches from the start screen to the options menu.
- */
+/** Switches from the start screen to the options menu. */
 function openOptions() {
     const startScreen = document.getElementById('startScreen');
     const optionsMenu = document.getElementById('optionsMenu');
@@ -36,9 +28,7 @@ function openOptions() {
     optionsMenu.classList.remove('hidden');
 }
 
-/**
- * Leaves the options menu and returns either to gameplay or to the start screen.
- */
+/** Leaves the options menu and returns either to gameplay or to the start screen. */
 function closeOptions() {
     const canvas = document.getElementById('canvas');
     const startScreen = document.getElementById('startScreen');
@@ -53,9 +43,7 @@ function closeOptions() {
     }
 }
 
-/**
- * Replaces the options menu with the controls menu.
- */
+/** Replaces the options menu with the controls menu. */
 function showControls() {
     const optionsMenu = document.getElementById('optionsMenu');
     const controlsMenu = document.getElementById('controlsMenu');
@@ -63,9 +51,7 @@ function showControls() {
     controlsMenu.classList.remove('hidden');
 }
 
-/**
- * Leaves the controls menu and returns to the options menu.
- */
+/** Leaves the controls menu and returns to the options menu. */
 function closeControls() {
     const optionsMenu = document.getElementById('optionsMenu');
     const controlsMenu = document.getElementById('controlsMenu');
@@ -73,9 +59,7 @@ function closeControls() {
     optionsMenu.classList.remove('hidden');
 }
 
-/**
- * Replaces the options menu with the game explanation menu.
- */
+/** Replaces the options menu with the game explanation menu. */
 function showGameExplanation() {
     const optionsMenu = document.getElementById('optionsMenu');
     const gameExplanationMenu = document.getElementById('gameExplanationMenu');
@@ -83,9 +67,7 @@ function showGameExplanation() {
     gameExplanationMenu.classList.remove('hidden');
 }
 
-/**
- * Leaves the game explanation menu and returns to the options menu.
- */
+/** Leaves the game explanation menu and returns to the options menu. */
 function closeGameExplanation() {
     const optionsMenu = document.getElementById('optionsMenu');
     const gameExplanationMenu = document.getElementById('gameExplanationMenu');
@@ -105,9 +87,7 @@ function showImpressum(returnTarget = 'options') {
     impressumMenu.classList.remove('hidden');
 }
 
-/**
- * Shows the impressum menu from the footer and chooses the correct return target.
- */
+/** Shows the impressum menu from the footer and chooses the correct return target. */
 function openImpressumFromFooter() {
     const optionsMenu = document.getElementById('optionsMenu');
     const hasWorld = typeof world !== 'undefined' && world;
@@ -116,18 +96,14 @@ function openImpressumFromFooter() {
     showImpressum(returnTarget);
 }
 
-/**
- * Hides the impressum menu and restores the screen that opened it.
- */
+/** Hides the impressum menu and restores the screen that opened it. */
 function closeImpressum() {
     document.getElementById('impressumMenu').classList.add('hidden');
     restoreImpressumReturnTarget();
     impressumReturnTarget = 'options';
 }
 
-/**
- * Reopens the screen that was active before the impressum menu appeared.
- */
+/** Reopens the screen that was active before the impressum menu appeared. */
 function restoreImpressumReturnTarget() {
     if (impressumReturnTarget === 'options') {
         document.getElementById('optionsMenu').classList.remove('hidden');
@@ -137,9 +113,7 @@ function restoreImpressumReturnTarget() {
     }
 }
 
-/**
- * Shows the in-game settings menu, blurs the canvas, and pauses the game.
- */
+/** Shows the in-game settings menu, blurs the canvas, and pauses the game. */
 function openSettings() {
     const canvas = document.getElementById('canvas');
     const optionsMenu = document.getElementById('optionsMenu');
@@ -149,9 +123,7 @@ function openSettings() {
     pauseGame();
 }
 
-/**
- * Stops the main game loop and marks the current round as paused.
- */
+/** Stops the main game loop and marks the current round as paused. */
 function pauseGame() {
     if (typeof world !== 'undefined' && world) {
         if (world.gameLoopInterval) {
@@ -162,9 +134,7 @@ function pauseGame() {
     }
 }
 
-/**
- * Clears the paused state and restarts the game loop while the round is still active.
- */
+/** Clears the paused state and restarts the game loop while the round is still active. */
 function resumeGame() {
     if (typeof world !== 'undefined' && world && !world.isGameOver) {
         isPaused = false;

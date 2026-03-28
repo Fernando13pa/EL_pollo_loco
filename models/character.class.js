@@ -72,9 +72,7 @@ class Character extends MovableObject {
     runningSound = new Audio('audio/audio_running.mp3');
 
 
-/**
-     * Preloads the character sprites, configures sounds, and starts gravity.
-     */
+    /** Preloads the character sprites, configures sounds, and starts gravity. */
     constructor() {
         super().loadImage('img/2_Pepe_figura/1_parado/tranquilo/I-1.png');
         this.loadImages(this.IMAGES_STILL);
@@ -87,17 +85,13 @@ class Character extends MovableObject {
         this.applyGravity();
     }
 
-/**
-     * Launches the movement update loop and the animation state loop.
-     */
+    /** Launches the movement update loop and the animation state loop. */
     animate() {
         this.animateMovement();
         this.animateCharacterState();
     }
 
-    /**
-     * Updates movement, jump input, and camera position on every frame.
-     */
+    /** Updates movement, jump input, and camera position on every frame. */
     animateMovement() {
         this.animateInterval = setInterval(() => {
             if (isPaused) return;
@@ -108,51 +102,39 @@ class Character extends MovableObject {
         addInterval(this.animateInterval);
     }
 
-    /**
-     * Processes horizontal movement and jump input for the current frame.
-     */
+    /** Processes horizontal movement and jump input for the current frame. */
     handleMovementInput() {
         this.handleHorizontalMovement();
         this.resetJumpInputWhenReleased();
         this.handleJumpInput();
     }
 
-    /**
-     * Moves the character left or right when the matching keys are pressed.
-     */
+    /** Moves the character left or right when the matching keys are pressed. */
     handleHorizontalMovement() {
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) this.moveCharacterRight();
         if (this.world.keyboard.LEFT && this.x > 0) this.moveCharacterLeft();
     }
 
-    /**
-     * Moves the character to the right, sets the facing direction, and refreshes the activity timer.
-     */
+    /** Moves the character to the right, sets the facing direction, and refreshes the activity timer. */
     moveCharacterRight() {
         this.moveRight();
         this.otherDirection = false;
         this.lastActionAt = Date.now();
     }
 
-    /**
-     * Moves the character to the left, flips the facing direction, and refreshes the activity timer.
-     */
+    /** Moves the character to the left, flips the facing direction, and refreshes the activity timer. */
     moveCharacterLeft() {
         this.moveLeft();
         this.otherDirection = true;
         this.lastActionAt = Date.now();
     }
 
-    /**
-     * Clears the consumed-jump flag once the jump key is released.
-     */
+    /** Clears the consumed-jump flag once the jump key is released. */
     resetJumpInputWhenReleased() {
         if (!this.world.keyboard.SPACE) this.jumpInputConsumed = false;
     }
 
-/**
-     * Triggers a player jump when the key is pressed and the jump conditions are met.
-     */
+    /** Triggers a player jump when the key is pressed and the jump conditions are met. */
     handleJumpInput() {
         if (!this.world.keyboard.SPACE || this.jumpInputConsumed || !this.canPerformPlayerJump()) return;
         this.jumpInputConsumed = true;
@@ -162,9 +144,7 @@ class Character extends MovableObject {
         if (!isMuted) this.jumpSound.play().catch(() => {});
     }
 
-    /**
-     * Tracks player activity based on current input to control idle/sleep animations.
-     */
+    /** Tracks player activity based on current input to control idle/sleep animations. */
     updateActivityTimestamp() {
         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT || this.world.keyboard.SPACE || this.world.keyboard.D) {
             this.lastActionAt = Date.now();
@@ -179,9 +159,7 @@ class Character extends MovableObject {
         return !this.isAboveGround() && Date.now() >= this.jumpCooldownUntil;
     }
 
-/**
-     * Launches the loop that chooses the correct animation for the current character state.
-     */
+    /** Launches the loop that chooses the correct animation for the current character state. */
     animateCharacterState() {
         this.animateInterval2 = setInterval(() => {
             if (isPaused) return;
@@ -190,9 +168,7 @@ class Character extends MovableObject {
         addInterval(this.animateInterval2);
     }
 
-    /**
-     * Reduces the character's health and stores the hit timestamp for hurt logic.
-     */
+    /** Reduces the character's health and stores the hit timestamp for hurt logic. */
     hit() {
         this.energy -= 10;
         if (this.energy < 0) {
@@ -202,9 +178,7 @@ class Character extends MovableObject {
         }
     }
 
-    /**
-     * Chooses the correct animation based on death, hurt, air, running, idle, or sleep state.
-     */
+    /** Chooses the correct animation based on death, hurt, air, running, idle, or sleep state. */
     selectAndPlayAnimation() {
         if (this.playPriorityAnimation()) return;
         if (this.isAboveGround()) return this.playAirAnimation();
@@ -253,9 +227,7 @@ class Character extends MovableObject {
         return true;
     }
 
-/**
-     * Selects one jump frame from the current vertical speed while the character is airborne.
-     */
+    /** Selects one jump frame from the current vertical speed while the character is airborne. */
     playJumpAnimation() {
         const frameIndex = this.resolveJumpFrameIndex();
         const path = this.IMAGES_JUMPING[frameIndex];
@@ -275,16 +247,12 @@ class Character extends MovableObject {
         return lastIndex;
     }
 
-/**
-     * Restores the default idle frame when the jump state ends or changes.
-     */
+    /** Restores the default idle frame when the jump state ends or changes. */
     resetJumpAnimation() {
         this.img = this.imageCache[this.IMAGES_STILL[0]];
     }
 
-/**
-     * Shows the running animation on the ground, otherwise idle or sleeping frames.
-     */
+    /** Shows the running animation on the ground, otherwise idle or sleeping frames. */
     handleGroundAnimation() {
         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
             this.playAnimation(this.IMAGES_WALKING);

@@ -47,22 +47,30 @@ canvas {
     left: 50%;
     bottom: 14px;
     transform: translateX(-50%);
-    background: none;
-    border: none;
-    color: #1f1f1f;
-    font-size: 1em;
-    font-family: Arial, sans-serif;
-    text-decoration: underline;
+    background: rgba(245, 232, 201, 0.92);
+    border: 1px solid rgba(76, 43, 12, 0.35);
+    color: #2f1705;
+    font-size: 1.05em;
+    font-family: 'Sancreek', sans-serif;
+    letter-spacing: 0.08em;
     cursor: pointer;
     z-index: 40;
-    padding: 4px 8px;
+    padding: 8px 18px;
+    border-radius: 999px;
     text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(4px);
     display: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .impressum-footer-link:hover {
-    color: #000;
-    text-decoration: underline;
+    color: #1c0d02;
+    background: rgba(255, 240, 207, 0.98);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.34);
+    text-decoration: none;
+    transform: translateX(-50%) scale(1.03);
 }
 
 @media only screen and (min-width: 820px) and (min-height: 820px) {

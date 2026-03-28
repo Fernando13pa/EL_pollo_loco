@@ -8,9 +8,7 @@ if (isTouchDevice()) {
     document.documentElement.classList.add('touch-device');
 }
 
-/**
- * Builds the canvas world for the current level and enables touch controls.
- */
+/** Builds the canvas world for the current level and enables touch controls. */
 function init() {
     canvas = document.getElementById('canvas');
     const level = createLevel();
@@ -18,14 +16,10 @@ function init() {
     setupTouchControls();
 }
 
-/**
- * Marks the matching game input as pressed for a physical keyboard event.
- */
+/** Marks the matching game input as pressed for a physical keyboard event. */
 window.addEventListener("keydown", (e) => updateKeyboardState(e.code, true));
 
-/**
- * Clears the matching game input for a physical keyboard event.
- */
+/** Clears the matching game input for a physical keyboard event. */
 window.addEventListener("keyup", (e) => updateKeyboardState(e.code, false));
 
 /**
@@ -42,9 +36,7 @@ function updateKeyboardState(code, isPressed) {
     if (code === 'KeyD') keyboard.D = isPressed;
 }
 
-/**
- * Connects the on-screen buttons to the keyboard flags used by the game controls.
- */
+/** Connects the on-screen buttons to the keyboard flags used by the game controls. */
 function setupTouchControls() {
     if (touchControlsInitialized) return;
     const buttons = getTouchButtons();

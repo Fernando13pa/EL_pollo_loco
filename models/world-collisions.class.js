@@ -1,7 +1,5 @@
 Object.assign(World.prototype, {
-    /**
-     * Runs all collision checks for the current frame and removes defeated enemies afterwards.
-     */
+    /** Runs all collision checks for the current frame and removes defeated enemies afterwards. */
     checkCollisions() {
         this.checkEnemyCollisions();
         this.checkBottleEnemyCollisions();
@@ -10,9 +8,7 @@ Object.assign(World.prototype, {
         this.cleanupDeadEnemies();
     },
 
-/**
-     * Resolves character-enemy collisions and classifies each hit as top or side contact.
-     */
+    /** Resolves character-enemy collisions and classifies each hit as top or side contact. */
     checkEnemyCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (!this.character.isColliding(enemy)) return;
@@ -46,9 +42,7 @@ Object.assign(World.prototype, {
         this.playSquashSound();
     },
 
-    /**
-     * Plays the chicken squash sound if sound is enabled.
-     */
+    /** Plays the chicken squash sound if sound is enabled. */
     playSquashSound() {
         if (isMuted) return;
         let squashSound = new Audio('audio/audio_chicken-squash.mp3');
@@ -69,9 +63,7 @@ Object.assign(World.prototype, {
         }
     },
 
-    /**
-     * Removes defeated non-endboss enemies from the level after their death delay has passed.
-     */
+    /** Removes defeated non-endboss enemies from the level after their death delay has passed. */
     cleanupDeadEnemies() {
         const removeDelayMs = 450;
         for (let i = this.level.enemies.length - 1; i >= 0; i--) {
@@ -93,9 +85,7 @@ Object.assign(World.prototype, {
         return true;
     },
 
-/**
-     * Resolves thrown-bottle collisions against enemies before the bottle touches the ground.
-     */
+    /** Resolves thrown-bottle collisions against enemies before the bottle touches the ground. */
     checkBottleEnemyCollisions() {
         this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
@@ -121,9 +111,7 @@ Object.assign(World.prototype, {
         this.removeBottle(bottle);
     },
 
-    /**
-     * Plays the glass breaking sound if sound is enabled.
-     */
+    /** Plays the glass breaking sound if sound is enabled. */
     playGlassSound() {
         if (!isMuted) {
             let glassSound = new Audio('audio/audio_glass.mp3');
@@ -150,9 +138,7 @@ Object.assign(World.prototype, {
         this.updateBottleThrowState();
     },
 
-/**
-     * Detects coin pickups for the current character position.
-     */
+    /** Detects coin pickups for the current character position. */
     checkCoinCollisions() {
         if (!this.level.coins) return;
         this.level.coins.forEach((coin) => {
@@ -174,9 +160,7 @@ Object.assign(World.prototype, {
         this.setCoinBarPercent(percent);
     },
 
-    /**
-     * Plays the coin collection sound if sound is enabled.
-     */
+    /** Plays the coin collection sound if sound is enabled. */
     playCoinSound() {
         if (!isMuted) {
             let coinSound = new Audio('audio/audio_collect-coin.mp3');
@@ -184,9 +168,7 @@ Object.assign(World.prototype, {
         }
     },
 
-/**
-     * Detects bottle pickups for the current character position.
-     */
+    /** Detects bottle pickups for the current character position. */
     checkBottleCollections() {
         if (!this.level.bottles) return;
         this.level.bottles.forEach((bottle) => {
@@ -208,9 +190,7 @@ Object.assign(World.prototype, {
         this.setBottleBarPercent(percent);
     },
 
-    /**
-     * Plays the bottle collection sound if sound is enabled.
-     */
+    /** Plays the bottle collection sound if sound is enabled. */
     playBottleSound() {
         if (!isMuted) {
             let bottleSound = new Audio('audio/audio_throw-bottle.mp3');

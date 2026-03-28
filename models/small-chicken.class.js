@@ -12,9 +12,7 @@ class SmallChicken extends MovableObject {
     isSquashed = false;
     deadSince = null;
 
-    /**
-     * Creates a small chicken enemy with random spawn position and walking speed.
-     */
+    /** Creates a small chicken enemy with random spawn position and walking speed. */
     constructor() {
         super().loadImage('img/3_Enemigos/Pollitos/1_caminar/1_w.png');
         this.loadImages(this.IMAGES_WALKING);
@@ -23,17 +21,13 @@ class SmallChicken extends MovableObject {
         this.speed = 0.15 + Math.random() * 0.5;
     }
 
-    /**
-     * Starts the movement loop and the sprite animation loop.
-     */
+    /** Starts the movement loop and the sprite animation loop. */
     animate() {
         this.startMovementInterval();
         this.startAnimationInterval();
     }
 
-    /**
-     * Starts the loop that moves the small chicken to the left until it is squashed.
-     */
+    /** Starts the loop that moves the small chicken to the left until it is squashed. */
     startMovementInterval() {
         this.moveInterval = setInterval(() => {
             if (isPaused) return;
@@ -42,9 +36,7 @@ class SmallChicken extends MovableObject {
         addInterval(this.moveInterval);
     }
 
-    /**
-     * Starts the loop that switches between walking frames or the dead sprite.
-     */
+    /** Starts the loop that switches between walking frames or the dead sprite. */
     startAnimationInterval() {
         this.animateInterval = setInterval(() => {
             if (isPaused) return;
@@ -57,16 +49,12 @@ class SmallChicken extends MovableObject {
         addInterval(this.animateInterval);
     }
 
-    /**
-     * Defeats the small chicken immediately when it is hit.
-     */
+    /** Defeats the small chicken immediately when it is hit. */
     hit() {
         this.squash();
     }
 
-    /**
-     * Marks the small chicken as squashed, sets it dead, and swaps to the dead sprite.
-     */
+    /** Marks the small chicken as squashed, sets it dead, and swaps to the dead sprite. */
     squash() {
         if (this.isSquashed) return;
         this.isSquashed = true;

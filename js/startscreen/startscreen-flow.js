@@ -1,6 +1,4 @@
-/**
- * Displays the game-over screen, hides gameplay buttons, and stops the running world.
- */
+/** Displays the game-over screen, hides gameplay buttons, and stops the running world. */
 function showGameOver() {
     const gameOverScreen = document.getElementById('gameOverScreen');
     const muteButton = document.getElementById('muteButton');
@@ -16,9 +14,7 @@ function showGameOver() {
     }
 }
 
-/**
- * Clears the endboss death flags so a restarted game begins with a living boss.
- */
+/** Clears the endboss death flags so a restarted game begins with a living boss. */
 function resetEndbossState() {
     if (world.level && world.level.enemies) {
         world.level.enemies.forEach(enemy => {
@@ -31,9 +27,7 @@ function resetEndbossState() {
     }
 }
 
-/**
- * Displays the win screen, stops the world, and plays the victory sound.
- */
+/** Displays the win screen, stops the world, and plays the victory sound. */
 function showGameWon() {
     showEndScreen('gameWonScreen');
     if (typeof world !== 'undefined' && world) {
@@ -56,9 +50,7 @@ function showEndScreen(screenId) {
     document.getElementById('settingsButton').classList.add('hidden');
 }
 
-/**
- * Resets the UI, timers, item placement state, and world instance before a new round starts.
- */
+/** Resets the UI, timers, item placement state, and world instance before a new round starts. */
 function restartGame() {
     hideAllScreens();
     resetIntervals();
@@ -73,9 +65,7 @@ function restartGame() {
     startGame();
 }
 
-/**
- * Hides all overlay screens and clears the canvas blur effect.
- */
+/** Hides all overlay screens and clears the canvas blur effect. */
 function hideAllScreens() {
     document.getElementById('gameOverScreen').classList.add('hidden');
     document.getElementById('gameWonScreen').classList.add('hidden');
@@ -88,9 +78,7 @@ function hideAllScreens() {
     menuOpen = false;
 }
 
-/**
- * Clears the remembered random placement positions for collectible items.
- */
+/** Clears the remembered random placement positions for collectible items. */
 function resetStaticPositions() {
     Coin.placedPositions = [];
     Bottle.placedPositions = [];

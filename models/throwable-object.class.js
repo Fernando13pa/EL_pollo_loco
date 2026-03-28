@@ -39,9 +39,7 @@ class ThrowableObject extends MovableObject {
         this.throw();
     }
 
-/**
-     * Launches gravity, movement, animation, and ground detection for the thrown bottle.
-     */
+    /** Launches gravity, movement, animation, and ground detection for the thrown bottle. */
     throw() {
         this.speedY = 18;
         this.applyGravity();
@@ -50,9 +48,7 @@ class ThrowableObject extends MovableObject {
         this.startGroundCheck();
     }
 
-/**
-     * Launches the loop that moves the bottle horizontally in its throw direction.
-     */
+    /** Launches the loop that moves the bottle horizontally in its throw direction. */
     startThrowMovement() {
         this.throwMoveInterval = setInterval(() => {
             if (isPaused) return;
@@ -61,9 +57,7 @@ class ThrowableObject extends MovableObject {
         addInterval(this.throwMoveInterval);
     }
 
-/**
-     * Launches the loop that updates either rotation frames or splash frames.
-     */
+    /** Launches the loop that updates either rotation frames or splash frames. */
     startThrowAnimation() {
         this.throwAnimationInterval = setInterval(() => {
             if (isPaused) return;
@@ -72,9 +66,7 @@ class ThrowableObject extends MovableObject {
         addInterval(this.throwAnimationInterval);
     }
 
-    /**
-     * Switches between rotation and splash animation and marks the bottle removable when finished.
-     */
+    /** Switches between rotation and splash animation and marks the bottle removable when finished. */
     updateAnimation() {
         if (this.hasHitGround && !this.shouldBeRemoved) {
             this.playAnimation(this.IMAGES_SPLASH);
@@ -87,9 +79,7 @@ class ThrowableObject extends MovableObject {
         }
     }
 
-/**
-     * Launches the loop that detects when the bottle reaches the ground.
-     */
+    /** Launches the loop that detects when the bottle reaches the ground. */
     startGroundCheck() {
         this.throwGroundCheckInterval = setInterval(() => {
             if (isPaused) return;
@@ -100,9 +90,7 @@ class ThrowableObject extends MovableObject {
         addInterval(this.throwGroundCheckInterval);
     }
 
-/**
-     * Stops vertical motion, switches state, and plays the glass sound after ground impact.
-     */
+    /** Stops vertical motion, switches state, and plays the glass sound after ground impact. */
     handleGroundHit() {
         this.hasHitGround = true;
         this.speedY = 0;

@@ -3,9 +3,9 @@ class Endboss extends MovableObject {
     width = 250;
     y = 55;
     collisionOffsets = { left: 42, right: 42, top: 70, bottom: 35 };
-    baseSpeed = 14;
-    runningAttackSpeed = 22;
-    speed = 14;
+    baseSpeed = 19;
+    runningAttackSpeed = 36;
+    speed = 19;
     isCharacterNear = false;
     isRunning = false;
     isAttacking = false;
@@ -18,12 +18,12 @@ class Endboss extends MovableObject {
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
-    chaseAfterHitDurationMs = 12000;
+    chaseAfterHitDurationMs = 15000;
     chaseAfterHitUntil = 0;
-    attackCycleIntervalMs = 1800;
+    attackCycleIntervalMs = 950;
     attackPhaseDelayMs = 0;
-    walkingPhaseDelayMs = 320;
-    endPhaseDelayMs = 1800;
+    walkingPhaseDelayMs = 80;
+    endPhaseDelayMs = 1100;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -66,9 +66,7 @@ class Endboss extends MovableObject {
         'img/4_Enemigos_jefes/5_muerta/G26.png'
     ];
 
-    /**
-     * Loads all endboss sprites and places the boss at the far end of the level.
-     */
+    /** Loads all endboss sprites and places the boss at the far end of the level. */
     constructor() {
         super().loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
@@ -79,18 +77,14 @@ class Endboss extends MovableObject {
         this.x = 3800;
     }
 
-/**
-     * Launches all loops that control endboss animation and attack behavior.
-     */
+    /** Launches all loops that control endboss animation and attack behavior. */
     animate() {
         this.animateStates();
         this.initializeAttackCycle();
         this.runAttackCycle();
     }
 
-/**
-     * Launches the loop that shows either death frames or the current active behavior animation.
-     */
+    /** Launches the loop that shows either death frames or the current active behavior animation. */
     animateStates() {
         this.animateInterval1 = setInterval(() => {
             if (isPaused) return;
@@ -103,9 +97,7 @@ class Endboss extends MovableObject {
         addInterval(this.animateInterval1);
     }
 
-/**
-     * Shows the death animation for the configured number of loops and then holds the final frame.
-     */
+    /** Shows the death animation for the configured number of loops and then holds the final frame. */
     playDeathAnimation() {
         if (this.deadAnimationLoops >= this.deadAnimationMaxLoops) {
             this.img = this.imageCache[this.IMAGES_DEAD[this.IMAGES_DEAD.length - 1]];
@@ -121,9 +113,7 @@ class Endboss extends MovableObject {
         }
     }
 
-    /**
-     * Selects the correct endboss animation and movement behavior for the current state.
-     */
+    /** Selects the correct endboss animation and movement behavior for the current state. */
     playBehaviorAnimation() {
         this.speed = this.baseSpeed;
         if (this.isHurt) return this.playHurtBehavior();
@@ -133,33 +123,25 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_ALERT);
     }
 
-    /**
-     * Plays the hurt animation while the endboss is in its hurt state.
-     */
+    /** Plays the hurt animation while the endboss is in its hurt state. */
     playHurtBehavior() {
         this.playAnimation(this.IMAGES_HURT);
     }
 
-    /**
-     * Plays the chase animation and moves the endboss toward the character.
-     */
+    /** Plays the chase animation and moves the endboss toward the character. */
     playChaseBehavior() {
         this.playAnimation(this.IMAGES_WALKING);
         this.chaseCharacter();
     }
 
-    /**
-     * Plays the running attack movement and increases movement speed.
-     */
+    /** Plays the running attack movement and increases movement speed. */
     playRunningBehavior() {
         this.speed = this.runningAttackSpeed;
         this.playAnimation(this.IMAGES_WALKING);
         this.moveLeft();
     }
 
-/**
-     * Launches the watcher that begins the attack cycle once the character reaches the boss area.
-     */
+    /** Launches the watcher that begins the attack cycle once the character reaches the boss area. */
     initializeAttackCycle() {
         this.animateInterval2 = setInterval(() => {
             if (isPaused) return;
@@ -171,9 +153,7 @@ class Endboss extends MovableObject {
         addInterval(this.animateInterval2);
     }
 
-    /**
-     * Repeats the attack cycle while the endboss is active and able to act.
-     */
+    /** Repeats the attack cycle while the endboss is active and able to act. */
     runAttackCycle() {
         this.animateInterval3 = setInterval(() => {
             if (isPaused) return;
@@ -184,9 +164,7 @@ class Endboss extends MovableObject {
         addInterval(this.animateInterval3);
     }
 
-/**
-     * Launches all timed phases of one complete attack cycle.
-     */
+    /** Launches all timed phases of one complete attack cycle. */
     executeAttackPhases() {
         this.startAlertPhase();
         this.scheduleAttackPhase();
@@ -194,17 +172,13 @@ class Endboss extends MovableObject {
         this.scheduleEndPhase();
     }
 
-    /**
-     * Resets the boss into its alert pose at the start of an attack cycle.
-     */
+    /** Resets the boss into its alert pose at the start of an attack cycle. */
     startAlertPhase() {
         this.isAttacking = false;
         this.isRunning = false;
     }
 
-    /**
-     * Schedules the attacking phase after the alert phase delay.
-     */
+    /** Schedules the attacking phase after the alert phase delay. */
     scheduleAttackPhase() {
         setTimeout(() => {
             if (!this.isHurt && !this.isDead) {
@@ -214,9 +188,7 @@ class Endboss extends MovableObject {
         }, this.attackPhaseDelayMs);
     }
 
-    /**
-     * Schedules the running phase and triggers the walking sound.
-     */
+    /** Schedules the running phase and triggers the walking sound. */
     scheduleWalkingPhase() {
         setTimeout(() => {
             if (!this.isHurt && !this.isDead) {
@@ -227,9 +199,7 @@ class Endboss extends MovableObject {
         }, this.walkingPhaseDelayMs);
     }
 
-    /**
-     * Plays the endboss walking sound effect if audio is enabled.
-     */
+    /** Plays the endboss walking sound effect if audio is enabled. */
     playWalkingSound() {
         if (!isMuted) {
             let walkingSound = new Audio('audio/audio_chicken-alarm.mp3');
@@ -237,9 +207,7 @@ class Endboss extends MovableObject {
         }
     }
 
-    /**
-     * Ends the timed attack cycle and keeps the boss active only if the character is still near.
-     */
+    /** Ends the timed attack cycle and keeps the boss active only if the character is still near. */
     scheduleEndPhase() {
         setTimeout(() => {
             if (!this.isHurt && !this.isDead) {
@@ -248,9 +216,7 @@ class Endboss extends MovableObject {
         }, this.endPhaseDelayMs);
     }
 
-    /**
-     * Applies a hit to the endboss, switches to hurt behavior, and triggers death when health reaches zero.
-     */
+    /** Applies a hit to the endboss, switches to hurt behavior, and triggers death when health reaches zero. */
     getHurt() {
         if (this.isDead) return;
         this.prepareForHitReaction();
@@ -258,9 +224,7 @@ class Endboss extends MovableObject {
         this.scheduleHurtRecovery();
     }
 
-    /**
-     * Prepares the endboss state changes that happen immediately after taking a hit.
-     */
+    /** Prepares the endboss state changes that happen immediately after taking a hit. */
     prepareForHitReaction() {
         this.isCharacterNear = true;
         this.hasStartedAttacking = true;
@@ -270,14 +234,12 @@ class Endboss extends MovableObject {
         this.energy -= 10;
     }
 
-    /**
-     * Ends the hurt phase after a delay and starts the temporary chase phase.
-     */
+    /** Ends the hurt phase after a delay and starts the temporary chase phase. */
     scheduleHurtRecovery() {
         setTimeout(() => {
             this.isHurt = false;
             this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
-        }, 1400);
+        }, 550);
     }
 
     /**
@@ -288,9 +250,7 @@ class Endboss extends MovableObject {
         return Date.now() < this.chaseAfterHitUntil;
     }
 
-    /**
-     * Moves the endboss toward the character, or left by default if no target is available.
-     */
+    /** Moves the endboss toward the character, or left by default if no target is available. */
     chaseCharacter() {
         if (!this.hasCharacterTarget()) return this.moveLeft();
         if (this.isCharacterLeftOfEndboss()) return this.moveTowardLeft();
@@ -315,25 +275,19 @@ class Endboss extends MovableObject {
         return characterCenterX < endbossCenterX;
     }
 
-    /**
-     * Turns the endboss left and moves it left.
-     */
+    /** Turns the endboss left and moves it left. */
     moveTowardLeft() {
         this.otherDirection = false;
         this.moveLeft();
     }
 
-    /**
-     * Turns the endboss right and moves it right.
-     */
+    /** Turns the endboss right and moves it right. */
     moveTowardRight() {
         this.otherDirection = true;
         this.moveRight();
     }
 
-    /**
-     * Switches the endboss into the dead state and stops all attack movement.
-     */
+    /** Switches the endboss into the dead state and stops all attack movement. */
     die() {
         this.isDead = true;
         this.isRunning = false;
@@ -341,9 +295,7 @@ class Endboss extends MovableObject {
         this.chaseAfterHitUntil = 0;
     }
 
-    /**
-     * Returns the full duration of the configured death animation sequence in milliseconds.
-     */
+    /** Returns the full duration of the configured death animation sequence in milliseconds. */
     getDeathAnimationDurationMs() {
         return this.deathAnimationIntervalMs * this.IMAGES_DEAD.length * this.deadAnimationMaxLoops;
     }

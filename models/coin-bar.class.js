@@ -1,6 +1,4 @@
-/**
- * Displays the player's collected coin progress with one image for each 20% step.
- */
+/** Displays the player's collected coin progress with one image for each 20% step. */
 class CoinBar extends DrawableObject {
     IMAGES = [
         'img/7_Barras/1_barra_de_estados/1_barra_de_monedas/azul/0.png',
@@ -12,9 +10,7 @@ class CoinBar extends DrawableObject {
     ];
     percent = 100;
 
-    /**
-     * Preloads the coin bar images, positions the bar, and starts it at 0%.
-     */
+    /** Preloads the coin bar images, positions the bar, and starts it at 0%. */
     constructor() {
         super().loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);

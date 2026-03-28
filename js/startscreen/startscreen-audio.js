@@ -1,6 +1,4 @@
-/**
- * Flips the global mute state, refreshes the UI, and applies it to the current world.
- */
+/** Flips the global mute state, refreshes the UI, and applies it to the current world. */
 function toggleMute() {
     isMuted = !isMuted;
     saveMutePreference();
@@ -46,9 +44,7 @@ function unmuteAllSounds(muteButton) {
     muteButton.style.opacity = '1';
 }
 
-/**
- * Synchronizes the mute button appearance with the current mute state.
- */
+/** Synchronizes the mute button appearance with the current mute state. */
 function updateMuteButtonUI() {
     const muteButton = document.getElementById('muteButton');
     if (muteButton) {
@@ -56,9 +52,7 @@ function updateMuteButtonUI() {
     }
 }
 
-/**
- * Silences all persistent world sounds and rewinds the character sounds.
- */
+/** Silences all persistent world sounds and rewinds the character sounds. */
 function stopAllSounds() {
     world.backgroundSound.pause();
     world.endbossSound.pause();
@@ -70,9 +64,7 @@ function stopAllSounds() {
     }
 }
 
-/**
- * Silences and rewinds all audio objects owned by the current world.
- */
+/** Silences and rewinds all audio objects owned by the current world. */
 function stopWorldSounds() {
     resetAudio(world.backgroundSound);
     resetAudio(world.endbossSound);

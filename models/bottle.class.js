@@ -83,9 +83,7 @@ class Bottle extends DrawableObject {
         }
     }
 
-    /**
-     * Starts the idle animation for bottles that sit on the ground.
-     */
+    /** Starts the idle animation for bottles that sit on the ground. */
     animateOnGround() {
         this.groundAnimationInterval = setInterval(() => {
             if (isPaused) return;

@@ -1,6 +1,4 @@
-/**
- * Displays the character's health with one image for each 20% step.
- */
+/** Displays the character's health with one image for each 20% step. */
 class StatusBar extends DrawableObject {
     IMAGES = [
         'img/7_Barras/1_barra_de_estados/2_barra_de_vida/azul/0.png',
@@ -12,9 +10,7 @@ class StatusBar extends DrawableObject {
     ];
     percent = 100;
 
-    /**
-     * Preloads the health bar images, positions the bar, and starts it at full health.
-     */
+    /** Preloads the health bar images, positions the bar, and starts it at full health. */
     constructor() {
         super().loadImage(this.IMAGES[5]);
         this.loadImages(this.IMAGES);

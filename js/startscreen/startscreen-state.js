@@ -19,9 +19,7 @@ function loadMutePreference() {
     }
 }
 
-/**
- * Saves the current mute preference to local storage.
- */
+/** Saves the current mute preference to local storage. */
 function saveMutePreference() {
     try {
         localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
@@ -38,9 +36,7 @@ function addInterval(intervalId) {
     if (intervalId) intervalIds.push(intervalId);
 }
 
-/**
- * Clears every registered interval and resets the stored interval list.
- */
+/** Clears every registered interval and resets the stored interval list. */
 function resetIntervals() {
     intervalIds.forEach(clearInterval);
     intervalIds = [];
