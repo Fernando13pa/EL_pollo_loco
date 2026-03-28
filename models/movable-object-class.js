@@ -2,22 +2,25 @@ class MovableObject extends DrawableObject {
     speed = 0.15;
     otherDirection = false;
     speedY = 0;
-    acceleration = 2.5;
+    acceleration = 1.25;
     energy = 100;
     lasHit = 0;
     gravityInterval;
 
-    /**
-     * Applies gravity to the object - objects fall down when above ground
+/**
+     * Launches the gravity loop that updates vertical movement while the object is airborne.
      */
     applyGravity() {
         this.gravityInterval = setInterval(() => {
             if (isPaused) return;
             this.applyGravityStep();
-        }, 1000 / 25);
+        }, 1000 / 50);
         addInterval(this.gravityInterval);
     }
 
+    /**
+     * Applies one gravity step and clamps non-throwable objects back to the ground.
+     */
     applyGravityStep() {
         if (!this.isAboveGround() && this.speedY <= 0) return;
         this.y -= this.speedY;
@@ -25,6 +28,9 @@ class MovableObject extends DrawableObject {
         this.clampToGround();
     }
 
+    /**
+     * Prevents non-throwable objects from sinking below their ground level.
+     */
     clampToGround() {
         if (this instanceof ThrowableObject) return;
         const groundLevelY = this.getGroundLevelY();
@@ -34,7 +40,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if object is falling down (speedY negative)
+     * Returns whether the object is currently moving downward.
      * @returns {boolean} true if falling
      */
     isOnWayDown() {
@@ -42,7 +48,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if object is above ground (y < 150) or a ThrowableObject
+     * Returns whether the object is still above its ground level or is a throwable object in flight.
      * @returns {boolean} true if above ground
      */
     isAboveGround() {
@@ -54,15 +60,15 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Returns the Y position representing ground level for this object.
+     * Returns the Y position that represents ground contact for this object.
      * @returns {number}
      */
     getGroundLevelY() {
         return 150;
     }
 
-    /**
-     * Checks if this object collides with another (AABB Bounding Box)
+/**
+     * Returns whether this object's hitbox overlaps another object's hitbox.
      * @param {MovableObject} movableObject - The other object
      * @returns {boolean} true on collision
      */
@@ -76,15 +82,15 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Gets collision bounds (hitbox) adjusted by character's body position
+     * Returns this object's current collision bounds.
      * @returns {object} Bounding box with left, right, top, bottom
      */
     getCollisionBounds() {
         return super.getCollisionBounds();
     }
 
-    /**
-     * Checks if collision is from above (character jumping on enemy)
+/**
+     * Returns whether the current collision hits the target from above while falling.
      * @param {MovableObject} enemy - Object to check collision with
      * @returns {boolean} true if collision is from above
      */
@@ -100,8 +106,8 @@ class MovableObject extends DrawableObject {
             characterBounds.bottom <= enemyBounds.top + tolerance;
     }
 
-    /**
-     * Checks if collision is from the side (horizontal)
+/**
+     * Returns whether the collision reaches deep enough into the target to count as a side hit.
      * @param {MovableObject} enemy - Object to check collision with
      * @returns {boolean} true if collision is from side
      */
@@ -115,7 +121,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Reduces energy by 5 points and stores hit time
+     * Reduces the object's energy and stores the hit time for hurt-state checks.
      */
     hit() {
         this.energy -= 5;
@@ -127,7 +133,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if object is falling down (speedY negative)
+     * Returns whether the object is currently moving downward.
      * @returns {boolean} true if falling
      */
     isOnWayDown() {
@@ -135,7 +141,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if object is dead (no energy left)
+     * Returns whether the object has no energy left.
      * @returns {boolean} true if energy = 0
      */
     isDead() {
@@ -143,7 +149,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if object is hurt (was hit less than 1 second ago)
+     * Returns whether the object was hit within the last second.
      * @returns {boolean} true if hurt
      */
     isHurt() {
@@ -153,7 +159,7 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Plays animation by cycling through an image array
+     * Advances to the next frame in the given animation image sequence.
      * @param {Array} images - Array with image paths
      */
     playAnimation(images) {
@@ -164,14 +170,14 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Moves the object to the right
+     * Moves the object to the right by its current speed.
      */
     moveRight() {
         this.x += this.speed;
     }
 
     /**
-     * Moves the object to the left, resets position if outside screen
+     * Moves the object to the left and wraps it back when it leaves the screen.
      */
     moveLeft() {
         this.x -= this.speed;
@@ -180,10 +186,10 @@ class MovableObject extends DrawableObject {
         }
     }
 
-    /**
-     * Lets the object jump by setting vertical velocity
+/**
+     * Applies an upward jump impulse by assigning a positive vertical speed.
      */
     jump() {
-        this.speedY = 30;
+        this.speedY = 16;
     }
 }

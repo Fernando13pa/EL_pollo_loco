@@ -3,7 +3,7 @@ class Coin extends DrawableObject {
     static defaultMinGap = 300;
     collisionOffsets = { left: 34, right: 34, top: 34, bottom: 34 };
     /**
-     * Constructor - creates a coin at random or specified coordinates
+     * Creates a collectible coin at explicit coordinates or at a random valid position.
      * @param {number} x - X position (optional)
      * @param {number} y - Y position (optional)
      */
@@ -16,7 +16,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Sets the position of the coin
+     * Sets the coin position from explicit coordinates or generated random coordinates.
      * @param {number} x - X position (optional)
      * @param {number} y - Y position (optional)
      */
@@ -26,7 +26,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Generates random X position with minimum distance to other coins
+     * Generates a random X position that keeps the minimum gap to already placed coins.
      * @returns {number} The X position
      */
     generateRandomX() {
@@ -45,7 +45,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Generates random Y position for coins above the ground
+     * Generates a random Y position for a floating coin above the ground area.
      * @returns {number} The Y position
      */
     generateRandomY() {
@@ -56,7 +56,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Creates multiple coins with minimum distance
+     * Creates multiple coins at generated positions that respect the minimum gap.
      * @param {number} count - Number of coins
      * @param {Object} options - Options (minX, maxX, minGap)
      * @returns {Array} Array with coins
@@ -67,7 +67,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Generates positions with minimum distance
+     * Generates sorted X positions that stay far enough apart from each other.
      * @param {number} count - Number of positions
      * @param {Object} options - Options (minX, maxX, minGap)
      * @returns {Array} Sorted array with X positions
@@ -87,7 +87,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Checks if position has valid minimum distance
+     * Checks whether a candidate X position keeps the required gap to all existing positions.
      * @param {number} x - X position
      * @param {Array} positions - Existing positions
      * @param {number} minGap - Minimum distance
@@ -98,7 +98,7 @@ class Coin extends DrawableObject {
     }
 
     /**
-     * Creates coins at given positions
+     * Creates coins at the given X positions with random Y values above the ground.
      * @param {Array} positions - Array with X positions
      * @returns {Array} Array with coins
      */

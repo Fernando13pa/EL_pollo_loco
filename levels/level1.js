@@ -1,5 +1,5 @@
 /**
- * Creates the first level with all enemies, objects and items
+ * Creates the full first level with enemies, scenery, coins, and bottles.
  * @returns {Level} The complete level
  */
 function createLevel() {
@@ -13,7 +13,7 @@ function createLevel() {
 }
 
 /**
- * Creates all enemies for level 1
+ * Creates the enemy lineup for level 1, including the endboss.
  * @returns {Array} Array with all enemies
  */
 function createEnemies() {
@@ -25,7 +25,7 @@ function createEnemies() {
 }
 
 /**
- * Creates clouds for the background
+ * Creates the cloud layer for the level background.
  * @returns {Array} Array with clouds
  */
 function createClouds() {
@@ -33,7 +33,7 @@ function createClouds() {
 }
 
 /**
- * Creates all background objects for level 1
+ * Creates all repeating background segments for level 1.
  * @returns {Array} Array with background objects
  */
 function createBackgrounds() {
@@ -41,6 +41,11 @@ function createBackgrounds() {
     return offsets.flatMap((offset) => createBackgroundSegment(offset));
 }
 
+/**
+ * Creates one layered background segment at the given horizontal offset.
+ * @param {number} offset
+ * @returns {BackgroundObject[]}
+ */
 function createBackgroundSegment(offset) {
     const variant = Math.abs(Math.round(offset / 720) % 2) === 1 ? 2 : 1;
     return [
@@ -52,7 +57,7 @@ function createBackgroundSegment(offset) {
 }
 
 /**
- * Creates all coins for level 1
+ * Creates all collectible coins for level 1.
  * @returns {Array} Array with 10 coins
  */
 function createCoins() {
@@ -63,7 +68,7 @@ function createCoins() {
 }
 
 /**
- * Creates all bottles for level 1 (in air and on ground)
+ * Creates all collectible bottles for level 1, both floating and ground-based.
  * @returns {Array} Array with 13 bottles
  */
 function createBottles() {

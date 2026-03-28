@@ -8,7 +8,7 @@ class DrawableObject {
     collisionOffsets = { left: 0, right: 0, top: 0, bottom: 0 };
 
     /**
-     * Loads a single image
+     * Loads one image file and stores it as the current drawable image.
      * @param {string} path - The path to the image
      */
     loadImage(path) {
@@ -17,7 +17,7 @@ class DrawableObject {
     }
 
     /**
-     * Draws the object on the canvas
+     * Draws the current image at the object's position and size on the canvas.
      * @param {CanvasRenderingContext2D} ctx - The canvas context
      */
     draw(ctx) {
@@ -25,7 +25,7 @@ class DrawableObject {
     }
 
     /**
-     * Draws a debug frame around certain objects
+     * Placeholder for optional debug-frame rendering in subclasses.
      * @param {CanvasRenderingContext2D} ctx - The canvas context
      */
     drawFrame(ctx) {
@@ -33,7 +33,7 @@ class DrawableObject {
     }
 
     /**
-     * Gets collision bounds considering offsets
+     * Returns the hitbox boundaries after applying the configured collision offsets.
      * @returns {Object} Collision bounds with left, right, top, bottom
      */
     getCollisionBounds() {
@@ -49,7 +49,7 @@ class DrawableObject {
     }
 
     /**
-     * Loads multiple images and stores them in cache
+     * Preloads multiple images and stores them in the image cache for later animation use.
      * @param {Array} arr - Array with image paths
      */
     loadImages(arr) {

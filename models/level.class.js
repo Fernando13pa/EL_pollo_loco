@@ -7,7 +7,7 @@ class Level {
     level_end_x = 4200;
 
     /**
-     * Constructor - defines a level with all objects
+     * Stores all enemies, scenery, and collectible objects that belong to one level.
      * @param {Array} enemies - Array with enemy objects
      * @param {Array} clouds - Array with cloud objects
      * @param {Array} backgroundObjects - Array with background objects

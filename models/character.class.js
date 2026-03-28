@@ -1,11 +1,10 @@
 class Character extends MovableObject {
     height = 280;
     y = 150;
-    speed = 10;
+    speed = 8;
     collisionOffsets = { left: 12, right: 12, top: 120 };
     jumpInputConsumed = false;
     jumpCooldownUntil = 0;
-    jumpFrameIndex = 0;
     sleepThresholdMs = 2200;
     lastActionAt = Date.now();
 
@@ -73,8 +72,8 @@ class Character extends MovableObject {
     runningSound = new Audio('audio/audio_running.mp3');
 
 
-    /**
-     * Constructor - loads all images and starts gravity
+/**
+     * Preloads the character sprites, configures sounds, and starts gravity.
      */
     constructor() {
         super().loadImage('img/2_Pepe_figura/1_parado/tranquilo/I-1.png');
@@ -88,8 +87,8 @@ class Character extends MovableObject {
         this.applyGravity();
     }
 
-    /**
-     * Starts both animation intervals (movement and display)
+/**
+     * Launches the movement update loop and the animation state loop.
      */
     animate() {
         this.animateMovement();
@@ -97,7 +96,7 @@ class Character extends MovableObject {
     }
 
     /**
-     * Controls character movement based on keyboard input
+     * Updates movement, jump input, and camera position on every frame.
      */
     animateMovement() {
         this.animateInterval = setInterval(() => {
@@ -110,7 +109,7 @@ class Character extends MovableObject {
     }
 
     /**
-     * Processes keyboard input for movement and jump
+     * Processes horizontal movement and jump input for the current frame.
      */
     handleMovementInput() {
         this.handleHorizontalMovement();
@@ -118,27 +117,42 @@ class Character extends MovableObject {
         this.handleJumpInput();
     }
 
+    /**
+     * Moves the character left or right when the matching keys are pressed.
+     */
     handleHorizontalMovement() {
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) this.moveCharacterRight();
         if (this.world.keyboard.LEFT && this.x > 0) this.moveCharacterLeft();
     }
 
+    /**
+     * Moves the character to the right, sets the facing direction, and refreshes the activity timer.
+     */
     moveCharacterRight() {
         this.moveRight();
         this.otherDirection = false;
         this.lastActionAt = Date.now();
     }
 
+    /**
+     * Moves the character to the left, flips the facing direction, and refreshes the activity timer.
+     */
     moveCharacterLeft() {
         this.moveLeft();
         this.otherDirection = true;
         this.lastActionAt = Date.now();
     }
 
+    /**
+     * Clears the consumed-jump flag once the jump key is released.
+     */
     resetJumpInputWhenReleased() {
         if (!this.world.keyboard.SPACE) this.jumpInputConsumed = false;
     }
 
+/**
+     * Triggers a player jump when the key is pressed and the jump conditions are met.
+     */
     handleJumpInput() {
         if (!this.world.keyboard.SPACE || this.jumpInputConsumed || !this.canPerformPlayerJump()) return;
         this.jumpInputConsumed = true;
@@ -158,26 +172,26 @@ class Character extends MovableObject {
     }
 
     /**
-     * Checks if a player-triggered jump is currently allowed
+     * Returns whether the player can start a manual jump right now.
      * @returns {boolean}
      */
     canPerformPlayerJump() {
         return !this.isAboveGround() && Date.now() >= this.jumpCooldownUntil;
     }
 
-    /**
-     * Selects and plays the correct animation based on character status
+/**
+     * Launches the loop that chooses the correct animation for the current character state.
      */
     animateCharacterState() {
         this.animateInterval2 = setInterval(() => {
             if (isPaused) return;
             this.selectAndPlayAnimation();
-        }, 50);
+        }, 90);
         addInterval(this.animateInterval2);
     }
 
     /**
-     * Takes damage from collision with enemy
+     * Reduces the character's health and stores the hit timestamp for hurt logic.
      */
     hit() {
         this.energy -= 10;
@@ -189,7 +203,7 @@ class Character extends MovableObject {
     }
 
     /**
-     * Determines which animation should be played (dead, hurt, jump, running, standing)
+     * Chooses the correct animation based on death, hurt, air, running, idle, or sleep state.
      */
     selectAndPlayAnimation() {
         if (this.playPriorityAnimation()) return;
@@ -198,12 +212,20 @@ class Character extends MovableObject {
         this.handleGroundAnimation();
     }
 
+/**
+     * Prioritizes death or hurt animations and reports whether one was used.
+     * @returns {boolean}
+     */
     playPriorityAnimation() {
         if (this.isDead()) return this.playDeadAnimation();
         if (this.isHurt()) return this.playHurtAnimation();
         return false;
     }
 
+/**
+     * Shows the death animation and stops the running sound.
+     * @returns {boolean}
+     */
     playDeadAnimation() {
         this.resetJumpAnimation();
         this.playAnimation(this.IMAGES_DEAD);
@@ -211,40 +233,57 @@ class Character extends MovableObject {
         return true;
     }
 
+/**
+     * Shows the hurt animation sequence.
+     * @returns {boolean}
+     */
     playHurtAnimation() {
         this.resetJumpAnimation();
         this.playAnimation(this.IMAGES_HURT);
         return true;
     }
 
+/**
+     * Shows the jump animation while airborne and stops the running sound.
+     * @returns {boolean}
+     */
     playAirAnimation() {
         this.playJumpAnimation();
         this.runningSound.pause();
         return true;
     }
 
-    /**
-     * Plays jump animation only once per jump and keeps last frame while airborne.
+/**
+     * Selects one jump frame from the current vertical speed while the character is airborne.
      */
     playJumpAnimation() {
-        const lastIndex = this.IMAGES_JUMPING.length - 1;
-        const frameIndex = Math.min(this.jumpFrameIndex, lastIndex);
+        const frameIndex = this.resolveJumpFrameIndex();
         const path = this.IMAGES_JUMPING[frameIndex];
         this.img = this.imageCache[path];
-        if (this.jumpFrameIndex < lastIndex) {
-            this.jumpFrameIndex++;
-        }
     }
 
-    /**
-     * Resets jump animation state when character is back on ground or state changes.
+    resolveJumpFrameIndex() {
+        const lastIndex = this.IMAGES_JUMPING.length - 1;
+        if (this.speedY > 10) return 0;
+        if (this.speedY > 7) return 1;
+        if (this.speedY > 4) return 2;
+        if (this.speedY > 2) return 3;
+        if (this.speedY > -1) return 4;
+        if (this.speedY > -4) return Math.min(5, lastIndex);
+        if (this.speedY > -7) return Math.min(6, lastIndex);
+        if (this.speedY > -10) return Math.min(7, lastIndex);
+        return lastIndex;
+    }
+
+/**
+     * Restores the default idle frame when the jump state ends or changes.
      */
     resetJumpAnimation() {
-        this.jumpFrameIndex = 0;
+        this.img = this.imageCache[this.IMAGES_STILL[0]];
     }
 
-    /**
-     * Plays animation when character is on ground (running or standing)
+/**
+     * Shows the running animation on the ground, otherwise idle or sleeping frames.
      */
     handleGroundAnimation() {
         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {

@@ -9,7 +9,7 @@ if (isTouchDevice()) {
 }
 
 /**
- * Initializes the game - creates canvas, level and world
+ * Builds the canvas world for the current level and enables touch controls.
  */
 function init() {
     canvas = document.getElementById('canvas');
@@ -19,31 +19,31 @@ function init() {
 }
 
 /**
- * Event listener for pressed keys - sets keyboard flags to true
+ * Marks the matching game input as pressed for a physical keyboard event.
  */
-window.addEventListener("keydown", (e) => {
-    if (e.keyCode === 38) keyboard.UP = true;
-    if (e.keyCode === 40) keyboard.DOWN = true;
-    if (e.keyCode === 37) keyboard.LEFT = true;
-    if (e.keyCode === 39) keyboard.RIGHT = true;
-    if (e.keyCode === 32) keyboard.SPACE = true;
-    if (e.keyCode === 68) keyboard.D = true;
-});
+window.addEventListener("keydown", (e) => updateKeyboardState(e.code, true));
 
 /**
- * Event listener for released keys - sets keyboard flags to false
+ * Clears the matching game input for a physical keyboard event.
  */
-window.addEventListener("keyup", (e) => {
-    if (e.keyCode === 38) keyboard.UP = false;
-    if (e.keyCode === 40) keyboard.DOWN = false;
-    if (e.keyCode === 37) keyboard.LEFT = false;
-    if (e.keyCode === 39) keyboard.RIGHT = false;
-    if (e.keyCode === 32) keyboard.SPACE = false;
-    if (e.keyCode === 68) keyboard.D = false;
-});
+window.addEventListener("keyup", (e) => updateKeyboardState(e.code, false));
 
 /**
- * Connects mobile control buttons to keyboard flags
+ * Maps a keyboard event code to the matching game input flag.
+ * @param {string} code
+ * @param {boolean} isPressed
+ */
+function updateKeyboardState(code, isPressed) {
+    if (code === 'ArrowUp') keyboard.UP = isPressed;
+    if (code === 'ArrowDown') keyboard.DOWN = isPressed;
+    if (code === 'ArrowLeft') keyboard.LEFT = isPressed;
+    if (code === 'ArrowRight') keyboard.RIGHT = isPressed;
+    if (code === 'Space') keyboard.SPACE = isPressed;
+    if (code === 'KeyD') keyboard.D = isPressed;
+}
+
+/**
+ * Connects the on-screen buttons to the keyboard flags used by the game controls.
  */
 function setupTouchControls() {
     if (touchControlsInitialized) return;
@@ -54,6 +54,10 @@ function setupTouchControls() {
     touchControlsInitialized = true;
 }
 
+/**
+ * Returns all touch control button elements in a fixed order.
+ * @returns {HTMLElement[]}
+ */
 function getTouchButtons() {
     return [
         document.getElementById('btnLeft'),
@@ -63,10 +67,19 @@ function getTouchButtons() {
     ];
 }
 
+/**
+ * Returns whether every required touch control button is available in the DOM.
+ * @param {HTMLElement[]} buttons
+ * @returns {boolean}
+ */
 function hasAllTouchButtons(buttons) {
     return buttons.every(Boolean);
 }
 
+/**
+ * Binds the movement, jump, and throw touch buttons to their matching keyboard flags.
+ * @param {HTMLElement[]} buttons
+ */
 function bindPrimaryTouchControls([btnLeft, btnRight, btnJump, btnThrow]) {
     bindHoldControl(btnLeft, 'LEFT');
     bindHoldControl(btnRight, 'RIGHT');
@@ -75,7 +88,7 @@ function bindPrimaryTouchControls([btnLeft, btnRight, btnJump, btnThrow]) {
 }
 
 /**
- * Adds safeguards against stuck input and long-press context menus
+ * Prevents stuck touch input and blocks the default long-press browser menu.
  * @param {HTMLElement[]} buttons - all on-screen control buttons
  */
 function setupTouchControlSafeguards(buttons) {
@@ -86,11 +99,19 @@ function setupTouchControlSafeguards(buttons) {
     touchControlSafeguardsInitialized = true;
 }
 
+/**
+ * Blocks the browser context menu on the touch control buttons.
+ * @param {HTMLElement[]} buttons
+ */
 function addContextMenuGuards(buttons) {
     const preventContextMenu = (e) => e.preventDefault();
     buttons.forEach((button) => button.addEventListener('contextmenu', preventContextMenu));
 }
 
+/**
+ * Returns a handler that clears every touch-driven keyboard flag.
+ * @returns {Function}
+ */
 function createTouchKeyResetHandler() {
     return () => {
         keyboard.LEFT = false;
@@ -100,6 +121,10 @@ function createTouchKeyResetHandler() {
     };
 }
 
+/**
+ * Registers global events that clear touch input after release or focus loss.
+ * @param {Function} resetTouchControlKeys
+ */
 function addTouchResetHandlers(resetTouchControlKeys) {
     window.addEventListener('pointerup', resetTouchControlKeys);
     window.addEventListener('pointercancel', resetTouchControlKeys);
@@ -110,7 +135,7 @@ function addTouchResetHandlers(resetTouchControlKeys) {
 }
 
 /**
- * Detects whether the current device supports touch input
+ * Returns whether the current device likely supports touch input.
  * @returns {boolean}
  */
 function isTouchDevice() {
@@ -118,7 +143,7 @@ function isTouchDevice() {
 }
 
 /**
- * Binds a button that keeps a key active while pressed
+ * Keeps a keyboard flag active while the matching touch button stays pressed.
  * @param {HTMLElement} button - control button
  * @param {string} keyName - keyboard flag name
  */
@@ -131,6 +156,12 @@ function bindHoldControl(button, keyName) {
     button.addEventListener('pointerleave', release);
 }
 
+/**
+ * Returns an event handler that writes one boolean value to a keyboard flag.
+ * @param {string} keyName
+ * @param {boolean} value
+ * @returns {Function}
+ */
 function createKeyHandler(keyName, value) {
     return (e) => {
         e.preventDefault();
@@ -139,7 +170,7 @@ function createKeyHandler(keyName, value) {
 }
 
 /**
- * Binds a button that triggers a short key press
+ * Simulates a short key tap when the matching touch button is pressed.
  * @param {HTMLElement} button - control button
  * @param {string} keyName - keyboard flag name
  */
@@ -153,6 +184,13 @@ function bindTapControl(button, keyName) {
     button.addEventListener('pointerdown', press);
 }
 
+/**
+ * Sets a tap-style keyboard flag briefly and schedules its release.
+ * @param {PointerEvent} e
+ * @param {string} keyName
+ * @param {number | null} previousTimer
+ * @returns {number}
+ */
 function handleTapPress(e, keyName, previousTimer) {
     e.preventDefault();
     keyboard[keyName] = true;

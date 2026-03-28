@@ -1,5 +1,5 @@
 /**
- * Bottle display (Bottle Bar) - shows available bottles in 6 levels
+ * Displays the player's available bottles with one image for each 20% step.
  */
 class BottleBar extends DrawableObject {
     IMAGES = [
@@ -13,7 +13,7 @@ class BottleBar extends DrawableObject {
     percent = 100;
 
     /**
-     * Constructor - loads images and sets position
+     * Preloads the bottle bar images, positions the bar, and starts it at 0%.
      */
     constructor() {
         super().loadImage(this.IMAGES[0]);
@@ -26,7 +26,7 @@ class BottleBar extends DrawableObject {
     }
 
     /**
-     * Sets the bottle percentage and updates the image
+     * Stores the bottle percentage and swaps to the matching bar image.
      * @param {number} percent - The percentage (0-100)
      */
     setPercent(percent) {
@@ -36,7 +36,7 @@ class BottleBar extends DrawableObject {
     }
 
     /**
-     * Determines which image is displayed based on percentage
+     * Returns the image index that matches the current bottle percentage.
      * @returns {number} Index of the image to display
      */
     resolveImageIndex() {

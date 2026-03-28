@@ -1,5 +1,5 @@
 /**
- * Endboss display (Endboss Bar) - shows endboss health in 6 levels
+ * Displays the endboss health with one image for each 20% step.
  */
 class EndbossBar extends DrawableObject {
     IMAGES = [
@@ -13,7 +13,7 @@ class EndbossBar extends DrawableObject {
     percent = 100;
 
     /**
-     * Constructor - loads images and sets position
+     * Preloads the endboss bar images, positions the bar, and starts it at full health.
      */
     constructor() {
         super().loadImage(this.IMAGES[5]);
@@ -26,7 +26,7 @@ class EndbossBar extends DrawableObject {
     }
 
     /**
-     * Sets the endboss health percentage and updates the image
+     * Stores the endboss health percentage and swaps to the matching bar image.
      * @param {number} percent - The percentage (0-100)
      */
     setPercent(percent) {
@@ -36,7 +36,7 @@ class EndbossBar extends DrawableObject {
     }
 
     /**
-     * Determines which image is displayed based on percentage
+     * Returns the image index that matches the current endboss health percentage.
      * @returns {number} Index of the image to display
      */
     resolveImageIndex() {

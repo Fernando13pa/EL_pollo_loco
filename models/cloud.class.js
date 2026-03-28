@@ -6,7 +6,7 @@ class Cloud extends MovableObject {
     cloudMoveInterval;
 
     /**
-     * Constructor - loads cloud image and starts animation
+     * Creates one background cloud at a random X position and starts its movement.
      */
     constructor() {
         super().loadImage('img/5_Fondo/fondos/4_nubes/1.png');
@@ -15,13 +15,13 @@ class Cloud extends MovableObject {
     }
 
     /**
-     * Starts movement of cloud to the left
+     * Starts the loop that moves the cloud steadily to the left.
      */
     animate() {
         this.cloudMoveInterval = setInterval(() => {
             if (isPaused) return;
             this.moveLeft();
-        }, 1000 / 60);
+        }, 1000 / 45);
         addInterval(this.cloudMoveInterval);
     }
 } 

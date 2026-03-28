@@ -8,7 +8,7 @@ class Bottle extends DrawableObject {
     ];
 
     /**
-     * Constructor - creates a bottle (on ground or in air)
+     * Creates a collectible bottle either in the air or on the ground.
      * @param {number} x - X position (optional)
      * @param {number} y - Y position (optional)
      * @param {boolean} onGround - Whether the bottle is on the ground
@@ -24,7 +24,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Loads the appropriate image for the bottle
+     * Loads the correct sprite set for an air bottle or a ground bottle.
      * @param {boolean} onGround - Whether the bottle is on the ground
      */
     loadBottleImage(onGround) {
@@ -37,7 +37,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Sets the position of the bottle
+     * Sets the bottle position from explicit coordinates or generated random coordinates.
      * @param {number} x - X position (optional)
      * @param {number} y - Y position (optional)
      * @param {boolean} onGround - Whether the bottle is on the ground
@@ -48,7 +48,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Generates random X position with minimum distance to other bottles
+     * Generates a random X position that keeps the minimum gap to already placed bottles.
      * @returns {number} The X position
      */
     generateRandomX() {
@@ -67,7 +67,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Generates random Y position based on position (ground/air)
+     * Generates a random Y position either on the ground line or floating above it.
      * @param {boolean} onGround - Whether the bottle is on the ground
      * @returns {number} The Y position
      */
@@ -84,18 +84,18 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Starts animation for bottles on the ground
+     * Starts the idle animation for bottles that sit on the ground.
      */
     animateOnGround() {
         this.groundAnimationInterval = setInterval(() => {
             if (isPaused) return;
             this.playAnimation(this.IMAGES_GROUND);
-        }, 400);
+        }, 700);
         addInterval(this.groundAnimationInterval);
     }
 
     /**
-     * Plays an animation
+     * Advances the bottle to the next frame of the given animation sequence.
      * @param {Array} images - Array with image paths
      */
     playAnimation(images) {
@@ -106,7 +106,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Creates multiple bottles with minimum distance
+     * Creates multiple bottles at generated positions that respect the minimum gap.
      * @param {number} count - Number of bottles
      * @param {Object} options - Options (minX, maxX, minGap)
      * @returns {Array} Array with bottles
@@ -117,7 +117,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Generates positions with minimum distance
+     * Generates sorted X positions that stay far enough apart from each other.
      * @param {number} count - Number of positions
      * @param {Object} options - Options (minX, maxX, minGap)
      * @returns {Array} Sorted array with X positions
@@ -137,7 +137,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Checks if position has valid minimum distance
+     * Checks whether a candidate X position keeps the required gap to all existing positions.
      * @param {number} x - X position
      * @param {Array} positions - Existing positions
      * @param {number} minGap - Minimum distance
@@ -148,7 +148,7 @@ class Bottle extends DrawableObject {
     }
 
     /**
-     * Creates bottles at given positions
+     * Creates air bottles at the given X positions with random Y values above the ground.
      * @param {Array} positions - Array with X positions
      * @returns {Array} Array with bottles
      */

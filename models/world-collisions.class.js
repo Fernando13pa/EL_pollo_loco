@@ -1,6 +1,6 @@
 Object.assign(World.prototype, {
     /**
-     * Main collision check includes all collisions and cleanup.
+     * Runs all collision checks for the current frame and removes defeated enemies afterwards.
      */
     checkCollisions() {
         this.checkEnemyCollisions();
@@ -10,8 +10,8 @@ Object.assign(World.prototype, {
         this.cleanupDeadEnemies();
     },
 
-    /**
-     * Checks collisions between character and enemies.
+/**
+     * Resolves character-enemy collisions and classifies each hit as top or side contact.
      */
     checkEnemyCollisions() {
         this.level.enemies.forEach((enemy) => {
@@ -27,7 +27,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Handles character jumping on enemy.
+     * Defeats a jumpable enemy and bounces the character back upward after a top collision.
      * @param {MovableObject} enemy - The enemy being jumped on.
      */
     handleJumpOnEnemy(enemy) {
@@ -36,12 +36,19 @@ Object.assign(World.prototype, {
         this.character.jump();
     },
 
+    /**
+     * Defeats an enemy after a top hit and triggers the squash sound effect.
+     * @param {MovableObject} enemy - The enemy that was hit from above.
+     */
     defeatEnemyFromTop(enemy) {
         if (typeof enemy.squash === 'function') enemy.squash();
         else enemy.hit();
         this.playSquashSound();
     },
 
+    /**
+     * Plays the chicken squash sound if sound is enabled.
+     */
     playSquashSound() {
         if (isMuted) return;
         let squashSound = new Audio('audio/audio_chicken-squash.mp3');
@@ -49,8 +56,8 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Handles side collision with enemy.
-     * @param {MovableObject} enemy - The enemy colliding with.
+     * Damages the character on a side collision, updates the health bar, and plays the hit sound.
+     * @param {MovableObject} enemy - The enemy touching the character from the side.
      */
     handleSideCollisionWithEnemy(enemy) {
         if (this.character.isHurt()) return;
@@ -63,7 +70,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Removes all dead enemies from level.
+     * Removes defeated non-endboss enemies from the level after their death delay has passed.
      */
     cleanupDeadEnemies() {
         const removeDelayMs = 450;
@@ -74,14 +81,20 @@ Object.assign(World.prototype, {
         }
     },
 
+    /**
+     * Returns whether an enemy can already be removed from the level.
+     * @param {MovableObject} enemy - The enemy to evaluate.
+     * @param {number} removeDelayMs - Minimum delay after death before removal.
+     * @returns {boolean} True when the enemy should be removed.
+     */
     shouldRemoveEnemy(enemy, removeDelayMs) {
         if (enemy instanceof Endboss || enemy.energy != 0) return false;
         if (enemy.deadSince && Date.now() - enemy.deadSince < removeDelayMs) return false;
         return true;
     },
 
-    /**
-     * Checks collisions between thrown bottles and enemies.
+/**
+     * Resolves thrown-bottle collisions against enemies before the bottle touches the ground.
      */
     checkBottleEnemyCollisions() {
         this.throwableObjects.forEach((bottle) => {
@@ -94,7 +107,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Handles a bottle hit on an enemy.
+     * Applies the correct hit effect for a bottle collision and removes the bottle afterwards.
      * @param {ThrowableObject} bottle - The thrown bottle.
      * @param {MovableObject} enemy - The hit enemy.
      */
@@ -109,7 +122,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Plays glass breaking sound.
+     * Plays the glass breaking sound if sound is enabled.
      */
     playGlassSound() {
         if (!isMuted) {
@@ -119,7 +132,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Damages the endboss and updates its health bar.
+     * Reduces the endboss health and refreshes the endboss health bar.
      * @param {Endboss} enemy - The endboss.
      */
     damageEndboss(enemy) {
@@ -129,16 +142,16 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Removes a bottle from the game.
+     * Removes a bottle from the active throwable objects and allows the next throw.
      * @param {ThrowableObject} bottle - The bottle to remove.
      */
     removeBottle(bottle) {
         this.throwableObjects = this.throwableObjects.filter((b) => b !== bottle);
-        this.bottleInFlight = false;
+        this.updateBottleThrowState();
     },
 
-    /**
-     * Checks if the character collects coins.
+/**
+     * Detects coin pickups for the current character position.
      */
     checkCoinCollisions() {
         if (!this.level.coins) return;
@@ -150,7 +163,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Collects one coin and updates the UI.
+     * Removes a collected coin, increases the counter, plays the sound, and updates the coin bar.
      * @param {Coin} coin - The collected coin.
      */
     collectCoin(coin) {
@@ -162,7 +175,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Plays coin sound.
+     * Plays the coin collection sound if sound is enabled.
      */
     playCoinSound() {
         if (!isMuted) {
@@ -171,8 +184,8 @@ Object.assign(World.prototype, {
         }
     },
 
-    /**
-     * Checks if the character collects bottles.
+/**
+     * Detects bottle pickups for the current character position.
      */
     checkBottleCollections() {
         if (!this.level.bottles) return;
@@ -184,7 +197,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Collects one bottle and updates the UI.
+     * Removes a collected bottle, increases the counter, plays the sound, and updates the bottle bar.
      * @param {Bottle} bottle - The collected bottle.
      */
     collectBottle(bottle) {
@@ -196,7 +209,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Plays bottle sound.
+     * Plays the bottle collection sound if sound is enabled.
      */
     playBottleSound() {
         if (!isMuted) {
@@ -205,8 +218,8 @@ Object.assign(World.prototype, {
         }
     },
 
-    /**
-     * Special collision for collecting items (ignores character head).
+/**
+     * Returns whether the character hitbox overlaps a collectible item hitbox.
      * @param {MovableObject} item - The item (coin or bottle).
      * @returns {boolean} True if character collects the item.
      */
@@ -220,7 +233,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Sets coin bar percentage.
+     * Updates the coin bar to the given collection percentage.
      * @param {number} percent - The percentage.
      */
     setCoinBarPercent(percent) {
@@ -228,7 +241,7 @@ Object.assign(World.prototype, {
     },
 
     /**
-     * Sets bottle bar percentage.
+     * Updates the bottle bar to the given collection percentage.
      * @param {number} percent - The percentage.
      */
     setBottleBarPercent(percent) {

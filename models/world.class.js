@@ -22,7 +22,7 @@
     isActive = true;  // Flag to stop drawing loop on restart
 
     /**
-     * Constructor - initializes the game world with canvas, keyboard and level
+     * Creates the game world, connects canvas and input, and starts rendering plus gameplay loops.
      * @param {HTMLCanvasElement} canvas - The canvas element
      * @param {Keyboard} keyboard - The keyboard object
      * @param {Level} level - The current level
@@ -42,7 +42,7 @@
     }
 
     /**
-     * Initializes the counters for coins and bottles
+     * Resets the collected-item counters and stores the total number of coins and bottles in the level.
      */
     initializeCounters() {
         this.coinsCollected = 0;
@@ -52,7 +52,7 @@
     }
 
     /**
-     * Sets up background sound and starts it if not muted
+     * Configures the looping background music and starts playback when sound is enabled.
      */
     setupBackgroundSound() {
         this.backgroundSound.loop = true;
@@ -63,7 +63,7 @@
     }
 
     /**
-     * Sets world reference and starts all animations
+     * Links the world instance to the character and enemies, then starts their animations.
      */
     setWorld() {
         this.character.world = this;
@@ -74,8 +74,8 @@
         });
     }
 
-    /**
-     * Starts the game loop - checks collisions and events regularly
+/**
+     * Launches the main update loop for collisions, throwing, and the endboss trigger.
      */
     run() {
         this.gameLoopInterval = setInterval(() => {
@@ -88,18 +88,31 @@
         addInterval(this.gameLoopInterval);
     }
 
-    /**
-     * Checks if bottles are thrown and removes finished bottles
+/**
+     * Triggers a new bottle throw when allowed and removes bottles whose animation has finished.
      */
     checkThrowableObjects() {
-        if (this.keyboard.D && this.bottleBar.percent > 0 && !this.bottleInFlight) {
+        this.updateBottleThrowState();
+        if (this.keyboard.D && this.bottleBar.percent > 0 && this.canThrowBottle()) {
             this.throwBottle();
         }
         this.removeFinishedBottles();
     }
 
+    canThrowBottle() {
+        return !this.bottleInFlight && !this.hasActiveThrowableBottle();
+    }
+
+    hasActiveThrowableBottle() {
+        return this.throwableObjects.some((bottle) => !bottle.shouldBeRemoved);
+    }
+
+    updateBottleThrowState() {
+        this.bottleInFlight = this.hasActiveThrowableBottle();
+    }
+
     /**
-     * Throws a new bottle
+     * Creates a new throwable bottle in front of the character and updates the bottle counter.
      */
     throwBottle() {
         const throwDirection = this.character.otherDirection ? -1 : 1;
@@ -115,19 +128,19 @@
     }
 
     /**
-     * Removes bottles that are finished with splash animation
+     * Removes throwable bottles that have completed their splash animation.
      */
     removeFinishedBottles() {
         this.throwableObjects.forEach((bottle) => {
             if (bottle.shouldBeRemoved) {
                 this.throwableObjects = this.throwableObjects.filter(b => b !== bottle);
-                this.bottleInFlight = false;
             }
         });
+        this.updateBottleThrowState();
     }
 
-    /**
-     * Checks if endboss should appear and starts his sound
+/**
+     * Triggers the endboss encounter once the character reaches the trigger position.
      */
     checkEndbossAppearance() {
         if (this.character.x > 3000 && !this.endbossSoundStarted) {
@@ -142,7 +155,7 @@
     }
 
     /**
-     * Activates the endboss when character is close enough
+     * Marks the endboss as alerted so its behavior can switch into the active fight state.
      */
     activateEndboss() {
         let endboss = this.level.enemies.find(e => e instanceof Endboss);
@@ -152,7 +165,7 @@
 
 
     /**
-     * Main draw function - called continuously
+     * Renders one frame of the game and schedules the next frame while the world is active.
      */
     draw() {
         if (!this.isActive) return;
@@ -167,7 +180,7 @@
     }
 
     /**
-     * Requests the next frame
+     * Requests the next animation frame and calls the draw loop again.
      */
     requestNextFrame() {
         if (!this.isActive) return;
@@ -178,7 +191,7 @@
     }
 
     /**
-     * Draws all game objects
+     * Draws the scrolling world contents and the fixed UI in the correct camera order.
      */
     drawGameObjects() {
         this.ctx.translate(this.camera_x, 0);
@@ -190,7 +203,7 @@
     }
 
     /**
-     * Draws all status bars (fixed on screen)
+     * Draws the status bars without camera movement so they stay fixed on the screen.
      */
     drawStatusBars() {
         this.ctx.translate(-this.camera_x, 0);
@@ -202,7 +215,7 @@
     }
 
     /**
-     * Draws all level objects (character, enemies, items)
+     * Draws collectibles, the character, enemies, and active throwable objects.
      */
     drawLevelObjects() {
         if (this.level.coins) this.addObjectsToMap(this.level.coins);
@@ -212,8 +225,8 @@
         this.addObjectsToMap(this.throwableObjects);
     }
 
-    /**
-     * Checks whether the game is over (character dead or endboss defeated)
+/**
+     * Ends the round when the player loses or defeats the endboss.
      */
     checkGameEndConditions() {
         if (this.character.energy <= 0) {
@@ -225,7 +238,7 @@
     }
 
     /**
-     * Handles the game-over state
+     * Stops the game loop and shows the game-over screen.
      */
     handleGameOver() {
         this.isGameOver = true;
@@ -234,7 +247,7 @@
     }
 
     /**
-     * Handles the win state
+     * Stops gameplay after the endboss death animation and then shows the win screen.
      */
     handleGameWon() {
         this.gameWonShown = true;
@@ -248,7 +261,7 @@
         }, deathAnimationDuration);
     }
     /**
-     * Adds an array of objects to the map
+     * Draws each object from an array by passing it to the single-object drawing helper.
      * @param {Array} objects - Array of drawable objects
      */
     addObjectsToMap(objects) {
@@ -258,7 +271,7 @@
     }
 
     /**
-     * Adds a single object to the map (with mirroring if needed)
+     * Draws one object and mirrors it temporarily when it faces the opposite direction.
      * @param {MovableObject} movableObject - The object to draw
      */
     addtoMap(movableObject) {
@@ -273,7 +286,7 @@
     }
 
     /**
-     * Mirrors an object's image horizontally
+     * Flips the canvas horizontally so an object can be drawn facing left.
      * @param {MovableObject} movableObject - The object to mirror
      */
     flipImage(movableObject) {
@@ -284,7 +297,7 @@
     }
 
     /**
-     * Resets an object's mirroring
+     * Restores the normal canvas orientation after a mirrored draw call.
      * @param {MovableObject} movableObject - The object
      */
     flipImageBack(movableObject) {

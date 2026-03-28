@@ -1,5 +1,5 @@
 /**
- * Health bar (Status Bar) - displays character health in 6 levels
+ * Displays the character's health with one image for each 20% step.
  */
 class StatusBar extends DrawableObject {
     IMAGES = [
@@ -13,7 +13,7 @@ class StatusBar extends DrawableObject {
     percent = 100;
 
     /**
-     * Constructor - loads images and sets position
+     * Preloads the health bar images, positions the bar, and starts it at full health.
      */
     constructor() {
         super().loadImage(this.IMAGES[5]);
@@ -26,7 +26,7 @@ class StatusBar extends DrawableObject {
     }
 
     /**
-     * Sets the health percentage and updates the image
+     * Stores the health percentage and swaps to the matching bar image.
      * @param {number} percent - The percentage (0-100)
      */
     setPercent(percent) {
@@ -36,7 +36,7 @@ class StatusBar extends DrawableObject {
     }
 
     /**
-     * Determines which image is displayed based on percentage
+     * Returns the image index that matches the current health percentage.
      * @returns {number} Index of the image to display
      */
     resolveImageIndex() {

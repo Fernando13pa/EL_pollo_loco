@@ -14,16 +14,16 @@ class Endboss extends MovableObject {
     deadFrameIndex = 0;
     deadAnimationLoops = 0;
     deadAnimationMaxLoops = 3;
-    deathAnimationIntervalMs = 200;
+    deathAnimationIntervalMs = 300;
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
     chaseAfterHitDurationMs = 12000;
     chaseAfterHitUntil = 0;
-    attackCycleIntervalMs = 1200;
+    attackCycleIntervalMs = 1800;
     attackPhaseDelayMs = 0;
-    walkingPhaseDelayMs = 120;
-    endPhaseDelayMs = 1200;
+    walkingPhaseDelayMs = 320;
+    endPhaseDelayMs = 1800;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -67,7 +67,7 @@ class Endboss extends MovableObject {
     ];
 
     /**
-     * Constructor - loads all images and sets position
+     * Loads all endboss sprites and places the boss at the far end of the level.
      */
     constructor() {
         super().loadImage(this.IMAGES_ALERT[0]);
@@ -79,8 +79,8 @@ class Endboss extends MovableObject {
         this.x = 3800;
     }
 
-    /**
-     * Starts all animation intervals for endboss behavior
+/**
+     * Launches all loops that control endboss animation and attack behavior.
      */
     animate() {
         this.animateStates();
@@ -88,8 +88,8 @@ class Endboss extends MovableObject {
         this.runAttackCycle();
     }
 
-    /**
-     * Animates the various states of the endboss
+/**
+     * Launches the loop that shows either death frames or the current active behavior animation.
      */
     animateStates() {
         this.animateInterval1 = setInterval(() => {
@@ -103,8 +103,8 @@ class Endboss extends MovableObject {
         addInterval(this.animateInterval1);
     }
 
-    /**
-     * Plays the death animation (only once)
+/**
+     * Shows the death animation for the configured number of loops and then holds the final frame.
      */
     playDeathAnimation() {
         if (this.deadAnimationLoops >= this.deadAnimationMaxLoops) {
@@ -122,7 +122,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Plays the animation based on current behavior
+     * Selects the correct endboss animation and movement behavior for the current state.
      */
     playBehaviorAnimation() {
         this.speed = this.baseSpeed;
@@ -133,23 +133,32 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_ALERT);
     }
 
+    /**
+     * Plays the hurt animation while the endboss is in its hurt state.
+     */
     playHurtBehavior() {
         this.playAnimation(this.IMAGES_HURT);
     }
 
+    /**
+     * Plays the chase animation and moves the endboss toward the character.
+     */
     playChaseBehavior() {
         this.playAnimation(this.IMAGES_WALKING);
         this.chaseCharacter();
     }
 
+    /**
+     * Plays the running attack movement and increases movement speed.
+     */
     playRunningBehavior() {
         this.speed = this.runningAttackSpeed;
         this.playAnimation(this.IMAGES_WALKING);
         this.moveLeft();
     }
 
-    /**
-     * Initializes the attack cycle after first alert
+/**
+     * Launches the watcher that begins the attack cycle once the character reaches the boss area.
      */
     initializeAttackCycle() {
         this.animateInterval2 = setInterval(() => {
@@ -158,12 +167,12 @@ class Endboss extends MovableObject {
                 this.hasStartedAttacking = true;
                 this.executeAttackPhases();
             }
-        }, 50);
+        }, 100);
         addInterval(this.animateInterval2);
     }
 
     /**
-     * Executes the attack cycle (Alert -> Attack -> Walking)
+     * Repeats the attack cycle while the endboss is active and able to act.
      */
     runAttackCycle() {
         this.animateInterval3 = setInterval(() => {
@@ -175,8 +184,8 @@ class Endboss extends MovableObject {
         addInterval(this.animateInterval3);
     }
 
-    /**
-     * Executes the 4 phases of the attack
+/**
+     * Launches all timed phases of one complete attack cycle.
      */
     executeAttackPhases() {
         this.startAlertPhase();
@@ -186,7 +195,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 1: Alert animation
+     * Resets the boss into its alert pose at the start of an attack cycle.
      */
     startAlertPhase() {
         this.isAttacking = false;
@@ -194,7 +203,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 2: Attack shortly after alert
+     * Schedules the attacking phase after the alert phase delay.
      */
     scheduleAttackPhase() {
         setTimeout(() => {
@@ -206,7 +215,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 3: Walking phase shortly after attack
+     * Schedules the running phase and triggers the walking sound.
      */
     scheduleWalkingPhase() {
         setTimeout(() => {
@@ -219,7 +228,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Plays walking sound
+     * Plays the endboss walking sound effect if audio is enabled.
      */
     playWalkingSound() {
         if (!isMuted) {
@@ -229,7 +238,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Phase 4: Stop walking at the end of the cycle
+     * Ends the timed attack cycle and keeps the boss active only if the character is still near.
      */
     scheduleEndPhase() {
         setTimeout(() => {
@@ -240,7 +249,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Called when endboss is hit
+     * Applies a hit to the endboss, switches to hurt behavior, and triggers death when health reaches zero.
      */
     getHurt() {
         if (this.isDead) return;
@@ -249,6 +258,9 @@ class Endboss extends MovableObject {
         this.scheduleHurtRecovery();
     }
 
+    /**
+     * Prepares the endboss state changes that happen immediately after taking a hit.
+     */
     prepareForHitReaction() {
         this.isCharacterNear = true;
         this.hasStartedAttacking = true;
@@ -258,15 +270,18 @@ class Endboss extends MovableObject {
         this.energy -= 10;
     }
 
+    /**
+     * Ends the hurt phase after a delay and starts the temporary chase phase.
+     */
     scheduleHurtRecovery() {
         setTimeout(() => {
             this.isHurt = false;
             this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
-        }, 1000);
+        }, 1400);
     }
 
     /**
-     * Returns whether the endboss should currently rush the character
+     * Returns whether the post-hit chase timer is still active.
      * @returns {boolean}
      */
     shouldChaseAfterHit() {
@@ -274,7 +289,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Moves the endboss toward the character's current position
+     * Moves the endboss toward the character, or left by default if no target is available.
      */
     chaseCharacter() {
         if (!this.hasCharacterTarget()) return this.moveLeft();
@@ -282,28 +297,42 @@ class Endboss extends MovableObject {
         this.moveTowardRight();
     }
 
+    /**
+     * Returns whether the world currently provides a character target for chasing.
+     * @returns {boolean}
+     */
     hasCharacterTarget() {
         return this.world && this.world.character;
     }
 
+    /**
+     * Returns whether the character is currently left of the endboss center point.
+     * @returns {boolean}
+     */
     isCharacterLeftOfEndboss() {
         const characterCenterX = this.world.character.x + this.world.character.width / 2;
         const endbossCenterX = this.x + this.width / 2;
         return characterCenterX < endbossCenterX;
     }
 
+    /**
+     * Turns the endboss left and moves it left.
+     */
     moveTowardLeft() {
         this.otherDirection = false;
         this.moveLeft();
     }
 
+    /**
+     * Turns the endboss right and moves it right.
+     */
     moveTowardRight() {
         this.otherDirection = true;
         this.moveRight();
     }
 
     /**
-     * Sets endboss to dead
+     * Switches the endboss into the dead state and stops all attack movement.
      */
     die() {
         this.isDead = true;
@@ -313,7 +342,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * Returns the total death animation duration in ms
+     * Returns the full duration of the configured death animation sequence in milliseconds.
      */
     getDeathAnimationDurationMs() {
         return this.deathAnimationIntervalMs * this.IMAGES_DEAD.length * this.deadAnimationMaxLoops;

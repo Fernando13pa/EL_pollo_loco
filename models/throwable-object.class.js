@@ -21,7 +21,7 @@ class ThrowableObject extends MovableObject {
     shouldBeRemoved = false;
 
     /**
-     * Constructor - creates a thrown bottle
+     * Creates a flying bottle, sets its direction, and starts all throw behavior.
      * @param {number} x - Start X position
      * @param {number} y - Start Y position
      * @param {number} direction - Throw direction (1 right, -1 left)
@@ -39,41 +39,41 @@ class ThrowableObject extends MovableObject {
         this.throw();
     }
 
-    /**
-     * Throws the bottle - starts all throw intervals
+/**
+     * Launches gravity, movement, animation, and ground detection for the thrown bottle.
      */
     throw() {
-        this.speedY = 30;
+        this.speedY = 18;
         this.applyGravity();
         this.startThrowMovement();
         this.startThrowAnimation();
         this.startGroundCheck();
     }
 
-    /**
-     * Starts horizontal movement of the bottle
+/**
+     * Launches the loop that moves the bottle horizontally in its throw direction.
      */
     startThrowMovement() {
         this.throwMoveInterval = setInterval(() => {
             if (isPaused) return;
             this.x += 10 * this.direction;
-        }, 1000 / 25);
+        }, 1000 / 20);
         addInterval(this.throwMoveInterval);
     }
 
-    /**
-     * Starts animation (rotation or splash)
+/**
+     * Launches the loop that updates either rotation frames or splash frames.
      */
     startThrowAnimation() {
         this.throwAnimationInterval = setInterval(() => {
             if (isPaused) return;
             this.updateAnimation();
-        }, 1000 / 25);
+        }, 1000 / 15);
         addInterval(this.throwAnimationInterval);
     }
 
     /**
-     * Updates animation based on state
+     * Switches between rotation and splash animation and marks the bottle removable when finished.
      */
     updateAnimation() {
         if (this.hasHitGround && !this.shouldBeRemoved) {
@@ -87,8 +87,8 @@ class ThrowableObject extends MovableObject {
         }
     }
 
-    /**
-     * Checks if bottle has touched the ground
+/**
+     * Launches the loop that detects when the bottle reaches the ground.
      */
     startGroundCheck() {
         this.throwGroundCheckInterval = setInterval(() => {
@@ -96,12 +96,12 @@ class ThrowableObject extends MovableObject {
             if (this.y >= 350 && !this.hasHitGround) {
                 this.handleGroundHit();
             }
-        }, 1000 / 25);
+        }, 1000 / 24);
         addInterval(this.throwGroundCheckInterval);
     }
 
-    /**
-     * Handles ground contact - plays sound and stops falling
+/**
+     * Stops vertical motion, switches state, and plays the glass sound after ground impact.
      */
     handleGroundHit() {
         this.hasHitGround = true;

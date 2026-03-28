@@ -1,5 +1,5 @@
 /**
- * Keyboard class - stores the status of all pressed keys
+ * Stores the current pressed-state flags for all game input keys.
  */
 class Keyboard extends MovableObject {
     LEFT;    // Left arrow key

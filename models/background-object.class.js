@@ -3,7 +3,7 @@ class BackgroundObject extends MovableObject {
     height = 480;
 
     /**
-     * Constructor - loads background image and sets position
+     * Creates one background layer image at the given horizontal segment position.
      * @param {string} imgPath - Path to background image
      * @param {number} x - X position
      * @param {number} y - Y position (optional)
