@@ -3,9 +3,13 @@ class Endboss extends MovableObject {
     width = 250;
     y = 55;
     collisionOffsets = { left: 42, right: 42, top: 70, bottom: 35 };
-    baseSpeed = 19;
-    runningAttackSpeed = 36;
-    speed = 19;
+    baseSpeed = 23;
+    runningAttackSpeed = 48;
+    speed = 23;
+    speedIncreasePerHit = 3;
+    runningSpeedIncreasePerHit = 5;
+    maxBaseSpeed = 40;
+    maxRunningAttackSpeed = 78;
     isCharacterNear = false;
     isRunning = false;
     isAttacking = false;
@@ -18,12 +22,12 @@ class Endboss extends MovableObject {
     elapsedTime = 0;
     energy = 100;
     hasStartedAttacking = false;
-    chaseAfterHitDurationMs = 15000;
+    chaseAfterHitDurationMs = 24000;
     chaseAfterHitUntil = 0;
-    attackCycleIntervalMs = 950;
+    attackCycleIntervalMs = 600;
     attackPhaseDelayMs = 0;
-    walkingPhaseDelayMs = 80;
-    endPhaseDelayMs = 1100;
+    walkingPhaseDelayMs = 20;
+    endPhaseDelayMs = 750;
 
     IMAGES_ALERT = [
         'img/4_Enemigos_jefes/2_alerta/G5.png',
@@ -220,6 +224,7 @@ class Endboss extends MovableObject {
     getHurt() {
         if (this.isDead) return;
         this.prepareForHitReaction();
+        this.increaseAttackSpeed();
         if (this.energy <= 0) return this.die();
         this.scheduleHurtRecovery();
     }
@@ -239,7 +244,13 @@ class Endboss extends MovableObject {
         setTimeout(() => {
             this.isHurt = false;
             this.chaseAfterHitUntil = Date.now() + this.chaseAfterHitDurationMs;
-        }, 550);
+        }, 220);
+    }
+
+    /** Increases the endboss movement speeds after each bottle hit up to a maximum value. */
+    increaseAttackSpeed() {
+        this.baseSpeed = Math.min(this.baseSpeed + this.speedIncreasePerHit, this.maxBaseSpeed);
+        this.runningAttackSpeed = Math.min(this.runningAttackSpeed + this.runningSpeedIncreasePerHit, this.maxRunningAttackSpeed);
     }
 
     /**

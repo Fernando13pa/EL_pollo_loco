@@ -125,6 +125,7 @@ Object.assign(World.prototype, {
      */
     damageEndboss(enemy) {
         enemy.getHurt();
+        this.playEndbossHitSound();
         let percent = (enemy.energy / 100) * 100;
         this.endbossBar.setPercent(percent);
     },

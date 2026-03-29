@@ -13,7 +13,10 @@ class World {
     backgroundSound = new Audio('audio/audio_background.mp3');
     chickenSquashSound = new Audio('audio/audio_chicken-squash.mp3');
     endbossSound = new Audio('audio/audio_endboss-sound.mp3');
+    endbossHitSound = new Audio('audio/audio_hit.mp3');
     endbossSoundStarted = false;
+    lastEndbossHitSoundAt = 0;
+    endbossHitSoundCooldownMs = 700;
     isGameOver = false;
     gameWonShown = false;
     gameLoopInterval = null;
@@ -53,9 +56,20 @@ class World {
     setupBackgroundSound() {
         this.backgroundSound.loop = true;
         this.backgroundSound.volume = 0.3;
+        this.endbossHitSound.volume = 0.8;
         if (!isMuted) {
             this.backgroundSound.play().catch(() => {});
         }
+    }
+
+    /** Plays the endboss hit sound only when its cooldown has elapsed. */
+    playEndbossHitSound() {
+        if (isMuted) return;
+        const now = Date.now();
+        if (now - this.lastEndbossHitSoundAt < this.endbossHitSoundCooldownMs) return;
+        if (!this.endbossHitSound.paused && !this.endbossHitSound.ended) return;
+        this.lastEndbossHitSoundAt = now;
+        this.endbossHitSound.play().catch(() => {});
     }
 
     /** Links the world instance to the character and enemies, then starts their animations. */
